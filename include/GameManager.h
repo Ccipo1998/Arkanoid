@@ -55,6 +55,8 @@ public:
     */
     Level* GetCurrentLevel();
 
+    ~GameManager();
+
     unsigned int windowWidth;
     unsigned int windowHeight;
 
@@ -65,13 +67,13 @@ public:
 
 private:
 
-    List<GameWallPrefab> WallPrefabs;
-    List<GameRectanglePrefab> BackgroundsPrefabs;
-    List<GameRectanglePrefab> PlatformPrefabs;
-    GameBallPrefab BallPrefab;
+    List<GameWallPrefab*> WallPrefabs;
+    List<GamePrefab*> BackgroundsPrefabs;
+    List<GamePrefab*> PlatformPrefabs;
+    GamePrefab* BallPrefab;
 
     unsigned int score;
 
-    Level currentLevel;
+    Level* currentLevel;
 
 };

@@ -52,6 +52,8 @@ public:
     */
     T& operator[](unsigned int index);
 
+    ~List();
+
 private:
 
     T* elements;
@@ -155,6 +157,17 @@ T& List<T>::operator[](unsigned int index)
     }
 
     return this->elements[index];
+}
+
+template <class T>
+List<T>::~List()
+{
+    // destroy each element of the list
+    for (unsigned int i = 0; i < this->size; ++i)
+        delete this->elements[i];
+
+    // destroy the pointer to the elements
+    delete this->elements;
 }
 
 #pragma endregion DEFINITIONS

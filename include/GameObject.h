@@ -11,21 +11,7 @@ public:
 
 	GameObject();
 
-	/*
-	@brief
-	Constructor for a generic game object
-	@param position: initial position of the game object
-	@param texture: pointer to the texture to render on the game object
-	*/
-	GameObject(vec2f position, MGDTexture* texture);
-
-	virtual void Render() = 0;
-
-	/*
-	@brief
-	Texture getter
-	*/
-	MGDTexture* GetTexture();
+	virtual void Update() = 0;
 
 	/*
 	@brief
@@ -44,12 +30,9 @@ public:
 	Disable the game object (i.e. not considered for the updates)
 	*/
 	void Disable();
-	
-	vec2f position;
 
 protected:
 
-	MGDTexture* texture;
 	bool enabled;
 
 };
@@ -62,72 +45,112 @@ class GamePrefab
 
 	/*
 	@brief
-	Constructor for a generic game prefab
-	@param texture: the texture to apply to the game prefab
+	Add a texture for the game prefab
+	@param texture: the pointer to the texture to add
 	*/
-	GamePrefab(MGDTexture* texture);
-
 	void AddTexture(MGDTexture* texture);
 
 	/*
 	@brief
-	Texture getter
+	Current texture getter
 	*/
 	MGDTexture* GetTexture();
 
+	/*
+	@brief
+	Change the current selected texture
+	@param index: the index of the texture to select among the textures available for the game prefab
+	*/
+	void SetTexture(unsigned int index);
+
+	~GamePrefab();
+
 protected:
 
-	MGDTexture* texture;
-	List<MGDTexture> textures;
+	unsigned int texIndex;
+	List<MGDTexture*> textures;
 };
 
-class GameRectangle : public GameObject
+class GameRect : public GameObject
 {
 public:
 
-	GameRectangle();
+	GameRect();
 
 	/*
 	@brief
 	Constructor for a generic game rectangle
-	@param position: initial position of the game rectangle
-	@param texture: the texture to render on the game rectangle
+	@param position: position of the game rectangle
 	@param width: the width of the game rectangle
 	@param height: the height of the game rectangle
+	@param prefab: the pointer to the prefab (for textures)
 	*/
-	GameRectangle(vec2f position, MGDTexture* texture, unsigned int width, unsigned int height);
+	GameRect(vec2f position, unsigned int width, unsigned int height, GamePrefab* prefab);
 
 	/*
 	@brief
-	Game rectangle rendering method
+	Game rectangle generic rendering method
 	*/
-	void Render() override;
+	void Render();
+	
+	/*
+	@brief
+	Linked Game Prefab getter
+	*/
+	GamePrefab* GetPrefab();
 
+	/*
+	@brief
+	Operations to execute at each frame
+	*/
+	void Update() override;
+
+	~GameRect();
+
+	vec2f position;
 	unsigned int width;
 	unsigned int height;
 
+protected:
+
+	GamePrefab* prefab;
+
 };
 
-class GameRectanglePrefab : public GamePrefab
+class GameWallPrefab : public GamePrefab
 {
-	public:
 
-	GameRectanglePrefab();
+public:
+
+	GameWallPrefab();
 
 	/*
 	@brief
-	Constructor for a generic game rectangle prefab
-	@param texture: the texture to render on the game rectangle prefab
-	@param width: the width of the game rectangle prefab
-	@param height: the height of the game rectangle prefab
+	Initialization constructor
+	@param maxHitCount: the maximum number of hit for the game wall
 	*/
-	GameRectanglePrefab(MGDTexture texture, unsigned int width, unsigned int height);
+	GameWallPrefab(unsigned int maxHitCount);
 
-	unsigned int width;
-	unsigned int height;
+	/*
+	@brief
+	Max hit counter setter
+	@param: the maximum number of hits for the game wall
+	*/
+	void SetMaxHitCount(unsigned int maxHitCount);
+
+	/*
+	@brief
+	Max hit counter getter
+	*/
+	unsigned int GetMaxHitCount();
+
+protected:
+
+	unsigned int maxHitCount;
+
 };
 
-class GameWall : public GameRectangle
+class GameWall : public GameRect
 {
 public:
 
@@ -142,7 +165,7 @@ public:
 	@param height: the height of the game wall
 	@param maxHitCount: the number of hits to destroy the game wall
 	*/
-	GameWall(vec2f position, MGDTexture* texture, unsigned int width, unsigned int height, unsigned int maxHitCount);
+	GameWall(vec2f position, unsigned int width, unsigned int height, GameWallPrefab* prefab);
 
 	/*
 	@brief
@@ -150,42 +173,24 @@ public:
 	*/
 	unsigned int GetHitCount();
 
-protected:
+	/*
+	Decrease the hit count by one
+	*/
+	void Hit();
+
+	/*
+	@brief
+	Operations to execute at each frame
+	*/
+	void Update() override;
+
+private:
 
 	unsigned int hitCount;
 
-	List<MGDTexture*> textures;
-
 };
 
-class GameWallPrefab: public GameRectanglePrefab
-{
-	public:
-
-	GameWallPrefab();
-
-	/*
-	@brief
-	Constructor for a game wall prefab
-	@param texture: the texture to render on the game object
-	@param width: the standard width of the game wall prefab
-	@param height: the standard height of the game wall prefab
-	@param maxHitCount: the number of hits to destroy the game wall
-	*/
-	GameWallPrefab(MGDTexture texture, unsigned int width, unsigned int height, unsigned int maxHitCount);
-
-	/*
-	@brief
-	Add a new texture to display instead the default one when the game wall prefab reached a certain number of hits left
-	@param atHitCount: at which number of hits left the new texture should be displayed
-	@param texture: the new texture
-	*/
-	void AddTexture(unsigned int atHitCount, MGDTexture texture);
-
-	unsigned int maxHitCount;
-};
-
-class GameBall : public GameObject
+class GameBall : public GameRect
 {
 public:
 
@@ -199,7 +204,7 @@ public:
 	@param size: the diameter of the ball
 	@param speed: the movement speed of the game ball
 	*/
-	GameBall(vec2f position, MGDTexture* texture, unsigned int size, float speed);
+	GameBall(vec2f position, unsigned int size, GamePrefab* prefab, float speed);
 
 	/*
 	@brief
@@ -209,11 +214,10 @@ public:
 
 	/*
 	@brief
-	Game ball rendering method
+	Operations to execute at each frame
 	*/
-	void Render() override;
+	void Update() override;
 
-	unsigned int size;
 	float speed;
 
 private:
@@ -222,33 +226,7 @@ private:
 
 };
 
-class GameBallPrefab : public GamePrefab
-{
-
-public:
-
-	GameBallPrefab();
-
-	/*
-	@brief
-	Constructor for a game ball prefab
-	@param texture: the texture to render on the game ball prefab
-	@param size: the diameter of the ball
-	@param speed: the movement speed of the game ball prefab
-	*/
-	GameBallPrefab(MGDTexture texture, unsigned int size, float speed);
-
-	unsigned int size;
-	float speed;
-
-};
-
-class GamePlatform : public GameRectangle // TODO: implement input system and abilities
-{
-
-};
-
-class GamePlatformPrefab : public GameRectanglePrefab // idk if it is useful
+class GamePlatform : public GameRect // TODO: implement input system and abilities
 {
 
 };

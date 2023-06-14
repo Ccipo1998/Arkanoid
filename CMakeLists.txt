@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(arkanoid VERSION 0.1.0)
 
+# build compile macro
+add_compile_definitions("BUILD_DEBUG=$<CONFIG:Debug>")
+
 add_executable(arkanoid
 arkanoid.cpp
 source/GameObject.cpp
@@ -24,7 +27,7 @@ ${CMAKE_SOURCE_DIR}/libs/sdl/include)
 
 # options to enable warnings
 if(MSVC)
-  target_compile_options(arkanoid PRIVATE) #/W4 /WX to consider warnings like errors
+  target_compile_options(arkanoid PRIVATE /MDd) #/W4 /WX to consider warnings like errors, /MDd for memory leak detection
 else()
   target_compile_options(arkanoid PRIVATE -Wall -Wextra -Wpedantic -Wconversion)
 endif()

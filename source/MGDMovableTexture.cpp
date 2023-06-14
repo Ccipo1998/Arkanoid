@@ -33,7 +33,7 @@ MGDMovableTexture::MGDMovableTexture(std::string path)
 
 MGDMovableTexture::~MGDMovableTexture() {
     // Free loaded images
-    _texture->free();
+    _texture->freeTexture();
     delete _texture;
 }
 

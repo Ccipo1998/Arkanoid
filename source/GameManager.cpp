@@ -7,6 +7,8 @@ GameManager::GameManager()
     , renderer(nullptr)
     , font(nullptr)
     , music(nullptr)
+    , BallPrefab(nullptr)
+    , currentLevel(nullptr)
     {}
 
 bool GameManager::InitializeSDL(unsigned int windowWidth, unsigned int windowHeight)
@@ -41,7 +43,7 @@ bool GameManager::InitializeSDL(unsigned int windowWidth, unsigned int windowHei
     // windowFlags |= SDL_WindowFlags::SDL_WINDOW_BORDERLESS;
 
     // Create window
-    this->window = SDL_CreateWindow("MGD Window", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, this->windowWidth, this->windowHeight, windowFlags);
+    this->window = SDL_CreateWindow("Arkanoid", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, this->windowWidth, this->windowHeight, windowFlags);
     if (this->window == nullptr) {
         printf("Window could not be created! SDL Error: %s\n", SDL_GetError());
         return false;
@@ -121,43 +123,79 @@ void GameManager::CloseSDL()
 void GameManager::LoadPrefabs()
 {
     // game walls
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/BlueWall.png"), 0, 0, 1));
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/GreenWall.png"), 0, 0, 1));
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/RedWall.png"), 0, 0, 1));
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/LightBlueWall.png"), 0, 0, 2));
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/OrangeWall.png"), 0, 0, 2));
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/PinkWall.png"), 0, 0, 2));
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/SilverWall.png"), 0, 0, 3));
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/WhiteWall.png"), 0, 0, 3));
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/YellowWall.png"), 0, 0, 3));
-    this->WallPrefabs.Add(GameWallPrefab(MGDTexture("assets/GoldWall.png"), 0, 0, 5));
+    this->WallPrefabs.Add(new GameWallPrefab(1));
+    this->WallPrefabs[0]->AddTexture(new MGDTexture("assets/BlueWall.png"));
+    this->WallPrefabs.Add(new GameWallPrefab(1));
+    this->WallPrefabs[1]->AddTexture(new MGDTexture("assets/GreenWall.png"));
+    this->WallPrefabs.Add(new GameWallPrefab(1));
+    this->WallPrefabs[2]->AddTexture(new MGDTexture("assets/RedWall.png"));
+    this->WallPrefabs.Add(new GameWallPrefab(2));
+    this->WallPrefabs[3]->AddTexture(new MGDTexture("assets/LightBlueWall.png"));
+    this->WallPrefabs.Add(new GameWallPrefab(2));
+    this->WallPrefabs[4]->AddTexture(new MGDTexture("assets/OrangeWall.png"));
+    this->WallPrefabs.Add(new GameWallPrefab(2));
+    this->WallPrefabs[5]->AddTexture(new MGDTexture("assets/PinkWall.png"));
+    this->WallPrefabs.Add(new GameWallPrefab(3));
+    this->WallPrefabs[6]->AddTexture(new MGDTexture("assets/SilverWall.png"));
+    this->WallPrefabs.Add(new GameWallPrefab(3));
+    this->WallPrefabs[7]->AddTexture(new MGDTexture("assets/WhiteWall.png"));
+    this->WallPrefabs.Add(new GameWallPrefab(3));
+    this->WallPrefabs[8]->AddTexture(new MGDTexture("assets/YellowWall.png"));
+    this->WallPrefabs.Add(new GameWallPrefab(5));
+    this->WallPrefabs[9]->AddTexture(new MGDTexture("assets/GoldWall.png"));
 
     // game backgrounds
-    this->BackgroundsPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/BlueBackground.png"), 0, 0));
-    this->BackgroundsPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/BlueBackground1.png"), 0, 0));
-    this->BackgroundsPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/DarkBlueBackground.png"), 0, 0));
-    this->BackgroundsPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/DarkBlueBackground1.png"), 0, 0));
-    this->BackgroundsPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/DarkGreenBackground.png"), 0, 0));
-    this->BackgroundsPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/GreenBackground.png"), 0, 0));
-    this->BackgroundsPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/RedBackground.png"), 0, 0));
-    this->BackgroundsPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/RedBackground1.png"), 0, 0));
-    this->BackgroundsPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/RedBackground2.png"), 0, 0));
+    this->BackgroundsPrefabs.Add(new GamePrefab());
+    this->BackgroundsPrefabs[0]->AddTexture(new MGDTexture("assets/BlueBackground.png"));
+    this->BackgroundsPrefabs.Add(new GamePrefab());
+    this->BackgroundsPrefabs[1]->AddTexture(new MGDTexture("assets/BlueBackground1.png"));
+    this->BackgroundsPrefabs.Add(new GamePrefab());
+    this->BackgroundsPrefabs[2]->AddTexture(new MGDTexture("assets/DarkBlueBackground.png"));
+    this->BackgroundsPrefabs.Add(new GamePrefab());
+    this->BackgroundsPrefabs[3]->AddTexture(new MGDTexture("assets/DarkBlueBackground1.png"));
+    this->BackgroundsPrefabs.Add(new GamePrefab());
+    this->BackgroundsPrefabs[4]->AddTexture(new MGDTexture("assets/DarkGreenBackground.png"));
+    this->BackgroundsPrefabs.Add(new GamePrefab());
+    this->BackgroundsPrefabs[5]->AddTexture(new MGDTexture("assets/GreenBackground.png"));
+    this->BackgroundsPrefabs.Add(new GamePrefab());
+    this->BackgroundsPrefabs[6]->AddTexture(new MGDTexture("assets/RedBackground.png"));
+    this->BackgroundsPrefabs.Add(new GamePrefab());
+    this->BackgroundsPrefabs[7]->AddTexture(new MGDTexture("assets/RedBackground1.png"));
+    this->BackgroundsPrefabs.Add(new GamePrefab());
+    this->BackgroundsPrefabs[8]->AddTexture(new MGDTexture("assets/RedBackground2.png"));
 
     // game platforms
-    this->PlatformPrefabs.Add(GameRectanglePrefab(MGDTexture("assets/VausPlatform.png"), 0, 0));
+    this->PlatformPrefabs.Add(new GamePrefab());
+    this->PlatformPrefabs[0]->AddTexture(new MGDTexture("assets/VausPlatform.png"));
+    this->PlatformPrefabs.Add(new GamePrefab());
+    this->PlatformPrefabs[1]->AddTexture(new MGDTexture("assets/VausLargePlatform.png"));
 
     // game ball
-    this->BallPrefab = GameBallPrefab(MGDTexture("assets/EnergyBall.png"), 0, .0f);
+    this->BallPrefab = new GamePrefab();
+    this->BallPrefab->AddTexture(new MGDTexture("assets/EnergyBall.png"));
 }
 
 void GameManager::GenerateRandomLevel()
 {
-    this->currentLevel = Level(this->windowWidth, this->windowHeight, 10);
+    this->currentLevel = new Level(this->windowWidth, this->windowHeight, 10);
 
-    this->currentLevel.SetBackground(GameRectangle(vec2f(.0f, .0f), this->BackgroundsPrefabs[0].GetTexture(), this->windowWidth, this->windowHeight));
+    this->currentLevel->SetBackground(new GameRect(vec2f(.0f, .0f), this->windowWidth, this->windowHeight, this->BackgroundsPrefabs[0]));
 }
 
 Level* GameManager::GetCurrentLevel()
 {
-    return &this->currentLevel;
+    return this->currentLevel;
+}
+
+GameManager::~GameManager()
+{
+    delete this->window;
+    delete this->renderer;
+    delete this->font;
+    delete this->music;
+
+    // the lists free their memory and the memory of the object contained by themselves
+
+    delete this->BallPrefab;
+    delete this->currentLevel;
 }

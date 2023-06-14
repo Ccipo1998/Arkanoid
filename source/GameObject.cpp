@@ -2,26 +2,8 @@
 #include "GameObject.h"
 
 GameObject::GameObject()
-	: position(vec2f(.0f, .0f))
-	, texture(nullptr)
+	: enabled(true)
 	{}
-
-GameObject::GameObject(vec2f position, MGDTexture* texture)
-	: position(position)
-	, texture(texture)
-	{}
-
-MGDTexture* GameObject::GetTexture()
-{
-	return this->texture;
-}
-
-/*
-void GameObject::SetTexture(MGDTexture* texture)
-{
-	this->texture = texture;
-}
-*/
 
 bool GameObject::IsEnabled()
 {
@@ -40,56 +22,108 @@ void GameObject::Disable()
 
 GamePrefab::GamePrefab() {}
 
-GamePrefab::GamePrefab(MGDTexture texture)
+void GamePrefab::AddTexture(MGDTexture* texture)
 {
-	this->textures.Add(texture);
-	this->texture = &this->textures[0];
-}
+	if (this->textures.GetSize() == 0)
+		this->texIndex = 0;
 
-void GamePrefab::AddTexture(MGDTexture texture)
-{
 	this->textures.Add(texture);
 }
 
 MGDTexture* GamePrefab::GetTexture()
 {
-	return this->texture;
+	if (this->textures.GetSize() == 0)
+		return nullptr;
+		
+	return this->textures[this->texIndex];
 }
 
-GameRectangle::GameRectangle()
+void GamePrefab::SetTexture(unsigned int index)
+{
+	if (index < this->textures.GetSize())
+		this->texIndex = index;
+}
+
+GamePrefab::~GamePrefab()
+{
+	// the lists free their memory and the memory of the object contained by themselves
+}
+
+GameRect::GameRect()
 	: GameObject()
+	, prefab(nullptr)
 	{}
 
-GameRectangle::GameRectangle(vec2f position, MGDTexture* texture, unsigned int width, unsigned int height)
-	: GameObject(position, texture)
+GameRect::GameRect(vec2f position, unsigned int width, unsigned int height, GamePrefab* prefab)
+	: GameObject()
+	, position(position)
 	, width(width)
 	, height(height)
+	, prefab(prefab)
 	{}
 
-void GameRectangle::Render()
+void GameRect::Render()
 {
 	// TODO
 }
 
-GameRectanglePrefab::GameRectanglePrefab()
+GamePrefab* GameRect::GetPrefab()
+{
+	return this->prefab;
+}
+
+void GameRect::Update()
+{
+	// TODO
+}
+
+GameRect::~GameRect()
+{
+	// here we dont delete the prefab pointer, because a prefab does not depend on the gameobject using it
+}
+
+GameWallPrefab::GameWallPrefab()
 	: GamePrefab()
 	{}
 
-GameRectanglePrefab::GameRectanglePrefab(MGDTexture texture, unsigned int width, unsigned int height)
-	: GamePrefab(texture)
-	, width(width)
-	, height(height)
+GameWallPrefab::GameWallPrefab(unsigned int maxHitCount)
+	: maxHitCount(maxHitCount)
 	{}
+
+void GameWallPrefab::SetMaxHitCount(unsigned int maxHitCount)
+{
+	this->maxHitCount = maxHitCount;
+}
+
+unsigned int GameWallPrefab::GetMaxHitCount()
+{
+	return this->maxHitCount;
+}
 
 GameWall::GameWall()
-	: GameRectangle()
+	: GameRect()
 	{}
 
-GameWall::GameWall(vec2f position, MGDTexture* texture, unsigned int width, unsigned int height, unsigned int maxHitCount)
-	: GameRectangle(position, texture, width, height)
-	, hitCount(maxHitCount)
+GameWall::GameWall(vec2f position, unsigned int width, unsigned int height, GameWallPrefab* prefab)
+	: GameRect(position, width, height, prefab)
 {
-	this->textures = List<MGDTexture*>();
+	if (prefab != nullptr)
+		this->hitCount = prefab->GetMaxHitCount();
+}
+
+unsigned int GameWall::GetHitCount()
+{
+	return this->hitCount;
+}
+
+void GameWall::Hit()
+{
+	--this->hitCount;
+}
+
+void GameWall::Update()
+{
+	// TODO
 }
 
 /*
@@ -111,46 +145,21 @@ void GameWall::AddTexture(unsigned int atHitCount, MGDTexture* texture)
 }
 */
 
-unsigned int GameWall::GetHitCount()
-{
-	return this->hitCount;
-}
-
-GameWallPrefab::GameWallPrefab()
-	: GameRectanglePrefab()
-	{}
-
-GameWallPrefab::GameWallPrefab(MGDTexture texture, unsigned int width, unsigned int height, unsigned int maxHitCount)
-	: GameRectanglePrefab(texture, width, height)
-	, maxHitCount(maxHitCount)
-	{}
-
 GameBall::GameBall()
-	: GameObject()
-	{}
-
-GameBall::GameBall(vec2f position, MGDTexture* texture, unsigned int size, float speed)
-	: GameObject(position, texture)
-	, size(size)
-	, speed(speed)
+	: GameRect()
 	{} // velocity(vec2f()) is called by default when allocating velocity memory
+
+GameBall::GameBall(vec2f position, unsigned int size, GamePrefab* prefab, float speed)
+	: GameRect(position, size, size, prefab)
+	, speed(speed)
+	{}
 
 vec2f GameBall::GetVelocity()
 {
 	return this->velocity;
 }
 
-void GameBall::Render()
+void GameBall::Update()
 {
 	// TODO
 }
-
-GameBallPrefab::GameBallPrefab()
-	: GamePrefab()
-	{}
-
-GameBallPrefab::GameBallPrefab(MGDTexture texture, unsigned int size, float speed)
-	: GamePrefab(texture)
-	, size(size)
-	, speed(speed)
-	{}

@@ -30,7 +30,7 @@ MGDTexture::MGDTexture(std::string path) {
 
 MGDTexture::~MGDTexture() {
     // Deallocate existing assets
-    free();
+    freeTexture();
 }
 
 bool MGDTexture::loadFromFile(std::string path) {
@@ -50,7 +50,7 @@ bool MGDTexture::loadFromFile(std::string path) {
 
 bool MGDTexture::loadPixelsFromFile(std::string path) {
     // Free preexisting assets
-    free();
+    freeTexture();
 
     // Load image at specified path
     SDL_Surface* loadedSurface = IMG_Load(path.c_str());
@@ -103,7 +103,7 @@ bool MGDTexture::loadFromPixels() {
 
 bool MGDTexture::loadFromRenderedText(std::string textureText, SDL_Color textColor) {
     // Get rid of preexisting texture
-    free();
+    freeTexture();
     // Render text surface
     SDL_Surface* textSurface = TTF_RenderText_Solid(Singleton<GameManager>::GetInstance()->font, textureText.c_str(), textColor);
     if (textSurface != NULL) {
@@ -129,7 +129,7 @@ bool MGDTexture::loadFromRenderedText(std::string textureText, SDL_Color textCol
 
 bool MGDTexture::createBlank(int width, int height, SDL_TextureAccess access) {
     // Get rid of preexisting texture
-    free();
+    freeTexture();
 
     // Create uninitialized texture
     _texture = SDL_CreateTexture(Singleton<GameManager>::GetInstance()->renderer, SDL_PIXELFORMAT_RGBA8888, access, width, height);
@@ -143,7 +143,7 @@ bool MGDTexture::createBlank(int width, int height, SDL_TextureAccess access) {
     return _texture != NULL;
 }
 
-void MGDTexture::free() {
+void MGDTexture::freeTexture() {
     // Free texture if it exists
     if (_texture != NULL) {
         SDL_DestroyTexture(_texture);

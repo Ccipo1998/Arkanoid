@@ -31,7 +31,7 @@ public:
     bool createBlank(int width, int height, SDL_TextureAccess access);
 
     // Deallocates texture
-    void free();
+    void freeTexture();
 
     // Set color modulation
     void setColor(Uint8 red, Uint8 green, Uint8 blue);

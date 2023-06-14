@@ -5,9 +5,19 @@ no using
 no container
 */
 
+// for memory leaks check
+#ifdef BUILD_DEBUG
+    #define _CRTDBG_MAP_ALLOC
+    #include <crtdbg.h>
+    #ifdef _DEBUG
+        #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+        #define new DEBUG_NEW
+    #endif
+#endif
+
 // All the SDL includes we need
 #include "SDL.h"
-#undef main
+#undef main // for linking error
 
 #include <cstdio> //Some utilities for the log
 #include <memory> // Needed for the smart pointers
@@ -20,6 +30,11 @@ no container
 #include "GameManager.h"
 
 int main() {
+
+    #ifdef BUILD_DEBUG
+        // enable memory leak detection
+        _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+    #endif
 
     // Game loop flag
     bool quitGame = false;
@@ -46,7 +61,7 @@ int main() {
 
     // keeps track of time between steps
     MGDTimer stepTimer;
-    
+
     // game loop
     while(!quitGame)
     {
@@ -71,7 +86,7 @@ int main() {
         SDL_Rect background = 
         { manager->GetCurrentLevel()->GetBackground()->position.x, manager->GetCurrentLevel()->GetBackground()->position.y,
             manager->GetCurrentLevel()->GetBackground()->width, manager->GetCurrentLevel()->GetBackground()->height };
-        MGDTexture* tex = manager->GetCurrentLevel()->GetBackground()->GetTexture();
+        MGDTexture* tex = manager->GetCurrentLevel()->GetBackground()->GetPrefab()->GetTexture();
         tex->renderCopyEx(&background);
 
         // update screen
@@ -80,6 +95,13 @@ int main() {
 
     // Free resources and close SDL
     manager->CloseSDL();
+
+    delete manager;
+
+    #ifdef BUILD_DEBUG
+        // query memory leaks
+        _CrtDumpMemoryLeaks();
+    #endif
 
     return 0;
 }
