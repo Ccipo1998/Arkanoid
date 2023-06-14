@@ -1,0 +1,15 @@
+
+# Visual Studio Code directory
+.vscode/
+
+# binaries folder
+bin/
+
+# build folder
+build/
+
+libs/sdl
+
+old/
+
+backup.cpp
