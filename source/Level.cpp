@@ -29,7 +29,7 @@ void Level::AddGamePlatform(GamePlatform* platform)
 
 void Level::AddGameBoundary(GameRect* boundary)
 {
-    this->gameBoundariesList.Add(boundary);
+    this->gameBoundaryList.Add(boundary);
 }
 
 void Level::SetBackground(GameRect* background)
@@ -40,6 +40,58 @@ void Level::SetBackground(GameRect* background)
 GameRect* Level::GetBackground()
 {
     return this->background;
+}
+
+unsigned int Level::GetBoundariesDepth()
+{
+    return this->boundariesDepth;
+}
+
+unsigned int Level::GetSpaceWidth()
+{
+    return this->spaceWidth;
+}
+
+unsigned int Level::GetSpaceHeight()
+{
+    return this->spaceHeight;
+}
+
+void Level::Render()
+{
+    // render background
+    if (this->background != nullptr && this->background->IsEnabled())
+        this->background->Render();
+
+    // render boundaries
+    #ifdef BUILD_DEBUG
+        for (unsigned int i = 0; i < this->gameBoundaryList.GetSize(); ++i)
+        {
+            if (this->gameBoundaryList[i]->IsEnabled())
+                this->gameBoundaryList[i]->Render();
+        }
+    #endif
+
+    // render walls
+    for (unsigned int i = 0; i < this->gameWallList.GetSize(); ++i)
+    {
+        if (this->gameWallList[i]->IsEnabled())
+            this->gameWallList[i]->Render();
+    }
+
+    // render platforms
+    for (unsigned int i = 0; i < this->gamePlatformList.GetSize(); ++i)
+    {
+        if (this->gamePlatformList[i]->IsEnabled())
+            this->gamePlatformList[i]->Render();
+    }
+
+    // render balls
+    for (unsigned int i = 0; i < this->gameBallList.GetSize(); ++i)
+    {
+        if (this->gameBallList[i]->IsEnabled())
+            this->gameBallList[i]->Render();
+    }
 }
 
 Level::~Level()

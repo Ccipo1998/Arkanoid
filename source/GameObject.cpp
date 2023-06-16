@@ -54,7 +54,7 @@ GameRect::GameRect()
 	, prefab(nullptr)
 	{}
 
-GameRect::GameRect(vec2f position, unsigned int width, unsigned int height, GamePrefab* prefab)
+GameRect::GameRect(vec2f position, float width, float height, GamePrefab* prefab)
 	: GameObject()
 	, position(position)
 	, width(width)
@@ -64,7 +64,15 @@ GameRect::GameRect(vec2f position, unsigned int width, unsigned int height, Game
 
 void GameRect::Render()
 {
-	// TODO
+	// check if the game rect has a valid prefab to use
+	if (this->prefab == nullptr || this->prefab->GetTexture() == nullptr)
+		return;
+
+	// create temp sdl rect
+	SDL_Rect rect = { this->position.x, this->position.y, this->width, this->height };
+	
+	// render current texture
+	this->prefab->GetTexture()->renderCopyEx(&rect);
 }
 
 GamePrefab* GameRect::GetPrefab()
@@ -104,7 +112,7 @@ GameWall::GameWall()
 	: GameRect()
 	{}
 
-GameWall::GameWall(vec2f position, unsigned int width, unsigned int height, GameWallPrefab* prefab)
+GameWall::GameWall(vec2f position, float width, float height, GameWallPrefab* prefab)
 	: GameRect(position, width, height, prefab)
 {
 	if (prefab != nullptr)
@@ -149,7 +157,7 @@ GameBall::GameBall()
 	: GameRect()
 	{} // velocity(vec2f()) is called by default when allocating velocity memory
 
-GameBall::GameBall(vec2f position, unsigned int size, GamePrefab* prefab, float speed)
+GameBall::GameBall(vec2f position, float size, GamePrefab* prefab, float speed)
 	: GameRect(position, size, size, prefab)
 	, speed(speed)
 	{}

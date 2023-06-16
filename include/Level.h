@@ -65,6 +65,30 @@ public:
     */
     GameRect* GetBackground();
 
+    /*
+    @brief
+    Boundaries depth getter
+    */
+    unsigned int GetBoundariesDepth();
+
+    /*
+    @brief
+    Space width getter
+    */
+    unsigned int GetSpaceWidth();
+
+    /*
+    @brief
+    Space height getter
+    */
+    unsigned int GetSpaceHeight();
+
+    /*
+    @brief
+    Call render functions of all the active game objects of the level
+    */
+    void Render();
+
     ~Level();
 
 private:
@@ -72,7 +96,7 @@ private:
     List<GameWall*> gameWallList;
     List<GameBall*> gameBallList;
     List<GamePlatform*> gamePlatformList;
-    List<GameRect*> gameBoundariesList;
+    List<GameRect*> gameBoundaryList;
     GameRect* background;
 
     unsigned int spaceWidth;

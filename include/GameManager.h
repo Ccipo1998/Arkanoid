@@ -72,6 +72,10 @@ private:
     List<GamePrefab*> PlatformPrefabs;
     GamePrefab* BallPrefab;
 
+    #ifdef BUILD_DEBUG
+        List<GamePrefab*> BoundaryPrefabs;
+    #endif
+
     unsigned int score;
 
     Level* currentLevel;

@@ -43,7 +43,7 @@ int main() {
     GameManager* manager = Singleton<GameManager>::GetInstance();
 
     // Start up SDL and create window
-    if (!manager->InitializeSDL(480, 640)) {
+    if (!manager->InitializeSDL(680, 740)) {
         printf("Failed to initialize!\n");
         
         // Free resources and close SDL
@@ -83,11 +83,8 @@ int main() {
         SDL_SetRenderDrawColor(manager->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(manager->renderer);
 
-        SDL_Rect background = 
-        { manager->GetCurrentLevel()->GetBackground()->position.x, manager->GetCurrentLevel()->GetBackground()->position.y,
-            manager->GetCurrentLevel()->GetBackground()->width, manager->GetCurrentLevel()->GetBackground()->height };
-        MGDTexture* tex = manager->GetCurrentLevel()->GetBackground()->GetPrefab()->GetTexture();
-        tex->renderCopyEx(&background);
+        // level rendering
+        manager->GetCurrentLevel()->Render();
 
         // update screen
         SDL_RenderPresent(manager->renderer);

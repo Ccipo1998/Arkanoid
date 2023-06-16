@@ -1,17 +1,18 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(arkanoid VERSION 0.1.0)
 
-# build compile macro
-add_compile_definitions("BUILD_DEBUG=$<CONFIG:Debug>")
-
 add_executable(arkanoid
 arkanoid.cpp
 source/GameObject.cpp
 source/Level.cpp
 source/GameManager.cpp
+source/Grid.cpp
 source/MGDMovableTexture.cpp
 source/MGDTexture.cpp
 source/MGDTimer.cpp) #sources
+
+# build compile macro
+target_compile_definitions(arkanoid PUBLIC $<$<CONFIG:Debug>:BUILD_DEBUG=1>)
 
 # base directories for the #include "" paths (BOTH include_directories() and target_include_directories() are needed)
 # no , between paths if "" are not used!!

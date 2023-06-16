@@ -1,5 +1,8 @@
 
+#include <stdlib.h>
+#include <time.h>
 #include "GameManager.h"
+#include "Grid.h"
 
 GameManager::GameManager()
     : score(0)
@@ -173,13 +176,52 @@ void GameManager::LoadPrefabs()
     // game ball
     this->BallPrefab = new GamePrefab();
     this->BallPrefab->AddTexture(new MGDTexture("assets/EnergyBall.png"));
+
+    // game boundaries
+    #ifdef BUILD_DEBUG
+        this->BoundaryPrefabs.Add(new GamePrefab());
+        this->BoundaryPrefabs[0]->AddTexture(new MGDTexture("assets/DebugBoundary.png"));
+    #endif
 }
 
 void GameManager::GenerateRandomLevel()
 {
-    this->currentLevel = new Level(this->windowWidth, this->windowHeight, 10);
+    unsigned int boundariesDepth = 25;
+    unsigned int platformSpace = 200;
+    unsigned int wallsNumberRow = 20;
+    unsigned int wallsNumberColumn = 10;
 
-    this->currentLevel->SetBackground(new GameRect(vec2f(.0f, .0f), this->windowWidth, this->windowHeight, this->BackgroundsPrefabs[0]));
+    this->currentLevel = new Level(this->windowWidth - (boundariesDepth * 2), (this->windowHeight - platformSpace) - boundariesDepth, boundariesDepth);
+
+    // initialize random seed
+    srand(time(nullptr));
+
+    // pick random background
+    this->currentLevel->SetBackground(new GameRect(vec2f(.0f, .0f), this->windowWidth, this->windowHeight, this->BackgroundsPrefabs[rand() % (this->BackgroundsPrefabs.GetSize() - 1)]));
+
+    // generate boundaries rectangles
+    GamePrefab* boundPtr = nullptr;
+
+    #ifdef BUILD_DEBUG
+        boundPtr = this->BoundaryPrefabs[0];
+    #endif
+
+    // game boundaries
+    this->currentLevel->AddGameBoundary(new GameRect(vec2f(.0f, .0f), this->windowWidth, boundariesDepth, boundPtr));
+    this->currentLevel->AddGameBoundary(new GameRect(vec2f(.0f, float(boundariesDepth)), boundariesDepth, this->windowHeight, boundPtr));
+    this->currentLevel->AddGameBoundary(new GameRect(vec2f(float(this->windowWidth - boundariesDepth), float(boundariesDepth)), boundariesDepth, this->windowHeight, boundPtr));
+
+    // game platform
+    this->currentLevel->AddGamePlatform(new GamePlatform());
+
+    // game walls
+    Grid* grid = new Grid(this->currentLevel->GetSpaceWidth(), this->currentLevel->GetSpaceHeight(), wallsNumberRow, wallsNumberColumn, vec2f(float(boundariesDepth), float(boundariesDepth)));
+
+    unsigned int wallsNumber = wallsNumberRow * wallsNumberColumn;
+    for (unsigned int i = 0; i < wallsNumber; ++i)
+        this->currentLevel->AddGameWall(new GameWall(grid->GetNextFreePosition(), grid->GetCellWidth(), grid->GetCellHeight(), this->WallPrefabs[rand() % (this->WallPrefabs.GetSize() - 1)]));
+
+    delete grid;
 }
 
 Level* GameManager::GetCurrentLevel()

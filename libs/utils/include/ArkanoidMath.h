@@ -20,3 +20,23 @@ struct vec2f
     float x;
     float y;
 };
+
+struct vec2ui
+{
+	/*
+	@brief
+	Constructor for 2D unsigned int vector
+	@param x: x coordinate
+	@param y: y coordinate
+	*/
+    vec2ui(unsigned int x, unsigned int y);
+
+	/*
+	@brief
+	Default constructor for a 2D unsigned int vector (0,0)
+	*/
+    vec2ui();
+
+    unsigned int x;
+    unsigned int y;
+};

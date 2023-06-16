@@ -85,7 +85,7 @@ public:
 	@param height: the height of the game rectangle
 	@param prefab: the pointer to the prefab (for textures)
 	*/
-	GameRect(vec2f position, unsigned int width, unsigned int height, GamePrefab* prefab);
+	GameRect(vec2f position, float width, float height, GamePrefab* prefab);
 
 	/*
 	@brief
@@ -108,8 +108,8 @@ public:
 	~GameRect();
 
 	vec2f position;
-	unsigned int width;
-	unsigned int height;
+	float width;
+	float height;
 
 protected:
 
@@ -165,7 +165,7 @@ public:
 	@param height: the height of the game wall
 	@param maxHitCount: the number of hits to destroy the game wall
 	*/
-	GameWall(vec2f position, unsigned int width, unsigned int height, GameWallPrefab* prefab);
+	GameWall(vec2f position, float width, float height, GameWallPrefab* prefab);
 
 	/*
 	@brief
@@ -204,7 +204,7 @@ public:
 	@param size: the diameter of the ball
 	@param speed: the movement speed of the game ball
 	*/
-	GameBall(vec2f position, unsigned int size, GamePrefab* prefab, float speed);
+	GameBall(vec2f position, float size, GamePrefab* prefab, float speed);
 
 	/*
 	@brief
