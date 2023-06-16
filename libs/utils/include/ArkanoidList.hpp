@@ -121,7 +121,19 @@ void List<T>::Remove(unsigned int index)
     if (this->size <= index)
         return;
 
-    // copy of the removing element
+    // last item removed
+    if (this->size == 1)
+    {
+        free(this->elements[0]);
+        free(this->elements);
+
+        this->elements = nullptr;
+        --this->size;
+
+        return;
+    }
+
+    // copy of the element to remove
     T element = this->elements[index];
     
     memmove(&this->elements[index], &this->elements[index + 1], sizeof(T) * (this->size - index - 1));
@@ -164,10 +176,11 @@ List<T>::~List()
 {
     // destroy each element of the list
     for (unsigned int i = 0; i < this->size; ++i)
-        delete this->elements[i];
+        free(this->elements[i]);
 
     // destroy the pointer to the elements
-    delete this->elements;
+    if (this->elements != nullptr)
+        free(this->elements);
 }
 
 #pragma endregion DEFINITIONS
