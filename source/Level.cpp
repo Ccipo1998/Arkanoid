@@ -3,13 +3,7 @@
 
 Level::Level()
     : background(nullptr)
-    {}
-
-Level::Level(unsigned int spaceWidth, unsigned int spaceHeight, unsigned int boundariesDepth)
-    : spaceWidth(spaceWidth)
-    , spaceHeight(spaceHeight)
-    , boundariesDepth(boundariesDepth)
-    , background(nullptr)
+    , levelStarted(false)
     {}
 
 void Level::AddGameWall(GameWall* wall)
@@ -42,19 +36,62 @@ GameRect* Level::GetBackground()
     return this->background;
 }
 
-unsigned int Level::GetBoundariesDepth()
+void Level::SetWallsSpace(GameRect* wallsSpace)
 {
-    return this->boundariesDepth;
+    this->wallsSpace = wallsSpace;
 }
 
-unsigned int Level::GetSpaceWidth()
+GameRect* Level::GetWallsSpace()
 {
-    return this->spaceWidth;
+    return this->wallsSpace;
 }
 
-unsigned int Level::GetSpaceHeight()
+void Level::SetPlatformSpace(GameRect* platformSpace)
 {
-    return this->spaceHeight;
+    this->platformSpace = platformSpace;
+}
+
+GameRect* Level::GetPlatformSpace()
+{
+    return this->platformSpace;
+}
+
+void Level::HandleEvents(SDL_Event& sdlEvent)
+{
+    // platform events
+    for (unsigned int i = 0; i < this->gamePlatformList.GetSize(); ++i)
+        this->gamePlatformList[i]->HandleEvent(sdlEvent);
+
+    // ball event
+    if (sdlEvent.type == SDL_MOUSEBUTTONDOWN && !this->levelStarted)
+    {
+        // launch the game ball
+        if (this->gameBallList.GetSize() > 0)
+        {
+            this->gameBallList[0]->Launch();
+
+            this->levelStarted = true;
+        }
+    }
+}
+
+void Level::Update(double deltaTime)
+{
+    // call updates of balls and walls
+
+    // if level is not started, the ball needs to move with the platform
+    if (!this->levelStarted && this->gameBallList.GetSize() > 0 && this->gamePlatformList.GetSize() > 0)
+        this->gameBallList[0]->position.x = this->gamePlatformList[0]->position.x + this->gamePlatformList[0]->width / 2.0f - this->gameBallList[0]->width / 2.0f;
+
+    // game balls
+    for (unsigned int i = 0; i < this->gameBallList.GetSize(); ++i)
+        this->gameBallList[i]->Update(deltaTime);
+
+    // game walls
+    for (unsigned int i = 0; i < this->gameWallList.GetSize(); ++i)
+        this->gameWallList[i]->Update(deltaTime);
+
+    
 }
 
 void Level::Render()
@@ -99,4 +136,6 @@ Level::~Level()
     // the lists free their memory and the memory of the object contained by themselves
 
     delete this->background;
+    delete this->wallsSpace;
+    delete this->platformSpace;
 }

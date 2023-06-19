@@ -17,6 +17,29 @@ struct vec2f
 	*/
     vec2f();
 
+	vec2f operator*(float f)
+	{
+		return vec2f(this->x * f, this->y * f);
+	}
+
+	vec2f operator*(double d)
+	{
+		return vec2f(float(double(this->x) * d), float(double(this->y) * d));
+	}
+
+	vec2f operator+(vec2f v)
+	{
+		return vec2f(this->x + v.x, this->y + v.y);
+	}
+
+	vec2f& operator+=(vec2f v)
+	{
+		this->x = this->x + v.x;
+		this->y = this->y + v.y;
+		
+		return *this;
+	}
+
     float x;
     float y;
 };

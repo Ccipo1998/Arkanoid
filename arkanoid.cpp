@@ -9,10 +9,8 @@ no container
 #ifdef BUILD_DEBUG
     #define _CRTDBG_MAP_ALLOC
     #include <crtdbg.h>
-    #ifdef _DEBUG
-        #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-        #define new DEBUG_NEW
-    #endif
+    #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+    #define new DEBUG_NEW
 #endif
 
 // All the SDL includes we need
@@ -52,6 +50,9 @@ int main() {
         return 0;
     }
 
+    // hide mouse cursor
+    SDL_ShowCursor(SDL_DISABLE);
+
     // loading assets and levels
     manager->LoadPrefabs();
     manager->GenerateRandomLevel();
@@ -65,13 +66,6 @@ int main() {
     // game loop
     while(!quitGame)
     {
-        // handle events
-        while (SDL_PollEvent(&sdlEvent) != 0) {
-            // User requests quit
-            if (sdlEvent.type == SDL_QUIT)
-                quitGame = true;
-        }
-
         // Get the delta time in milliseconds
         Uint32 deltaTimeMs = stepTimer.getTicks();
         // Calculate the delta time in seconds
@@ -79,9 +73,21 @@ int main() {
         // Restart step timer
         stepTimer.start();
 
+        // handle events
+        while (SDL_PollEvent(&sdlEvent) != 0) {
+            // User requests quit
+            if (sdlEvent.type == SDL_QUIT)
+                quitGame = true;
+
+            manager->GetCurrentLevel()->HandleEvents(sdlEvent);
+        }
+
         // Clear screen
         SDL_SetRenderDrawColor(manager->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(manager->renderer);
+
+        // level update
+        manager->GetCurrentLevel()->Update(deltaTimeMs);
 
         // level rendering
         manager->GetCurrentLevel()->Render();

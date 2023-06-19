@@ -17,15 +17,6 @@ public:
 
     /*
     @brief
-    Constructor of a generic level with a starting game platform and a starting game ball
-    @param spaceWidth: the width (in pixels) of the space for the walls
-    @param spaceHeight: the height (in pixels) of the space for the walls
-    @param boundariesDepth: the space (in pixels) of the boundaries walls from the edges
-    */
-    Level(unsigned int spaceWidth, unsigned int spaceHeight, unsigned int boundariesDepth);
-
-    /*
-    @brief
     Add a game wall to the list of game walls of the level
     @param wall: the pointer to the game wall to add
     */
@@ -67,21 +58,44 @@ public:
 
     /*
     @brief
-    Boundaries depth getter
+    Level walls space setter
+    @param wallsSpace: the game rect representing the space for the game walls
     */
-    unsigned int GetBoundariesDepth();
+    void SetWallsSpace(GameRect* wallsSpace);
 
     /*
     @brief
-    Space width getter
+    Level walls space getter
     */
-    unsigned int GetSpaceWidth();
+    GameRect* GetWallsSpace();
 
     /*
     @brief
-    Space height getter
+    Level platform space setter
+    @param platformSpace: the game rect representing the space for the game platforms
     */
-    unsigned int GetSpaceHeight();
+    void SetPlatformSpace(GameRect* platformSpace);
+
+    /*
+    @brief
+    Level platform space getter
+    */
+    GameRect* GetPlatformSpace();
+
+    /*
+    @brief
+    Handle events sending them to the targets
+    @param sdlEvent: reference to the event to handle
+    @param deltaTime: the time passed from the last frame
+    */
+    void HandleEvents(SDL_Event& sdlEvent);
+
+    /*
+    @brief
+    Update all the objects of the level
+    @param deltaTime: the time passed from the last frame
+    */
+    void Update(double deltaTime);
 
     /*
     @brief
@@ -97,10 +111,11 @@ private:
     List<GameBall*> gameBallList;
     List<GamePlatform*> gamePlatformList;
     List<GameRect*> gameBoundaryList;
+    
     GameRect* background;
+    GameRect* wallsSpace;
+    GameRect* platformSpace;
 
-    unsigned int spaceWidth;
-    unsigned int spaceHeight;
+    bool levelStarted;
 
-    unsigned int boundariesDepth;
 };

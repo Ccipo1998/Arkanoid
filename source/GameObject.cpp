@@ -80,7 +80,7 @@ GamePrefab* GameRect::GetPrefab()
 	return this->prefab;
 }
 
-void GameRect::Update()
+void GameRect::Update(double deltaTime)
 {
 	// TODO
 }
@@ -129,7 +129,7 @@ void GameWall::Hit()
 	--this->hitCount;
 }
 
-void GameWall::Update()
+void GameWall::Update(double deltaTime)
 {
 	// TODO
 }
@@ -167,7 +167,28 @@ vec2f GameBall::GetVelocity()
 	return this->velocity;
 }
 
-void GameBall::Update()
+void GameBall::Launch()
+{
+	this->velocity = vec2f(.0f, -1.0f);
+}
+
+void GameBall::Update(double deltaTime)
+{
+	this->position += this->velocity * this->speed * deltaTime;
+}
+
+GamePlatform::GamePlatform(vec2f position, float width, float height, GamePrefab* prefab)
+	: GameRect(position, width, height, prefab)
+	{}
+
+void GamePlatform::HandleEvent(SDL_Event& sdlEvent)
+{
+	// platform motion
+	if (sdlEvent.type == SDL_MOUSEMOTION)
+		this->position.x = sdlEvent.motion.x - (this->width / 2.0f);
+}
+
+void GamePlatform::Update(double deltaTime)
 {
 	// TODO
 }

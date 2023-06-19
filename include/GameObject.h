@@ -11,7 +11,7 @@ public:
 
 	GameObject();
 
-	virtual void Update() = 0;
+	virtual void Update(double deltaTime) = 0;
 
 	/*
 	@brief
@@ -102,8 +102,9 @@ public:
 	/*
 	@brief
 	Operations to execute at each frame
+	@param deltaTime: the time passed from the last frame
 	*/
-	void Update() override;
+	void Update(double deltaTime) override;
 
 	~GameRect();
 
@@ -181,8 +182,9 @@ public:
 	/*
 	@brief
 	Operations to execute at each frame
+	@param deltaTime: the time passed from the last frame
 	*/
-	void Update() override;
+	void Update(double deltaTime) override;
 
 private:
 
@@ -214,9 +216,16 @@ public:
 
 	/*
 	@brief
-	Operations to execute at each frame
+	Launch the game ball in up direction
 	*/
-	void Update() override;
+	void Launch();
+
+	/*
+	@brief
+	Operations to execute at each frame
+	@param deltaTime: the time passed from the last frame
+	*/
+	void Update(double deltaTime) override;
 
 	float speed;
 
@@ -226,7 +235,34 @@ private:
 
 };
 
-class GamePlatform : public GameRect // TODO: implement input system and abilities
+class GamePlatform : public GameRect
 {
+
+public:
+
+	/*
+	@brief
+	Constructor for the game platform
+	@param position: the starting position of the game platform
+	@param width: the width of the game platform
+	@param height: the height of the game platform
+	@param prefab: the pointer to the prefab to attach to the game platform
+	@param speed: the maximum speed of the game platform
+	*/
+	GamePlatform(vec2f position, float width, float height, GamePrefab* prefab);
+
+	/*
+	@brief
+	Response to an event that moves the game platform
+	@param sdlEvent: the reference to the incoming event
+	*/
+	void HandleEvent(SDL_Event& sdlEvent);
+
+	/*
+	@brief
+	Operations to execute at each frame
+	@param deltaTime: the time passed from the last frame
+	*/
+	void Update(double deltaTime) override;
 
 };

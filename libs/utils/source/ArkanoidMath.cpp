@@ -10,7 +10,7 @@ vec2f::vec2f()
     : x(.0f)
     , y(.0f)
     {}
-
+    
 vec2ui::vec2ui()
     : x(0)
     , y(0)
