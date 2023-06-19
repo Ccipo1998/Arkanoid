@@ -124,8 +124,8 @@ void List<T>::Remove(unsigned int index)
     // last item removed
     if (this->size == 1)
     {
-        free(this->elements[0]);
-        free(this->elements);
+        delete this->elements[0];
+        delete this->elements;
 
         this->elements = nullptr;
         --this->size;
@@ -153,6 +153,7 @@ void List<T>::Remove(unsigned int index)
     }
 
     this->elements = newElements;
+    delete element;
     --this->size;
 }
 
@@ -176,11 +177,11 @@ List<T>::~List()
 {
     // destroy each element of the list
     for (unsigned int i = 0; i < this->size; ++i)
-        free(this->elements[i]);
+        delete this->elements[i];
 
     // destroy the pointer to the elements
     if (this->elements != nullptr)
-        free(this->elements);
+        delete this->elements;
 }
 
 #pragma endregion DEFINITIONS
