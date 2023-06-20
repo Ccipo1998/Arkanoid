@@ -183,8 +183,7 @@ vec2f GameBall::GetDirection()
 
 void GameBall::SetDirection(vec2f newDirection)
 {
-	this->direction = newDirection;
-	amath::normalize(this->direction);
+	this->direction = amath::normalize(newDirection);
 }
 
 void GameBall::Launch()

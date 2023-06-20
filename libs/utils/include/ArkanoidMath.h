@@ -66,6 +66,11 @@ struct vec2f
 		return vec2f(this->x - v.x, this->y - v.y);
 	}
 
+	vec2f operator/(float f)
+	{
+		return vec2f(this->x / f, this->y / f);
+	}
+
     float x;
     float y;
 };
@@ -95,9 +100,9 @@ namespace amath
 	/*
 	@brief
 	Normalize the vector
-	@param vector: vector reference
+	@param vector: vector to normalize
 	*/
-	void normalize(vec2f& vector);
+	vec2f normalize(vec2f& vector);
 
 	/*
 	@brief

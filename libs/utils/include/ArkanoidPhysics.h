@@ -7,11 +7,11 @@ namespace aphys
 {
     /*
     @brief
-    Physical collision response between a static game rectangle and a movable game rectangle
+    Physical collision response between a static game rectangle and a game ball
     @param staticRect: reference to the game rectangle which doesn't move
-    @param movableRect: reference to the game rectangle to move
+    @param movableRect: reference to the game ball
     */
-    void collisionResponse(const GameRect& staticRect, GameBall& movableRect, double deltaTime);
+    void collisionResponse(const GameRect& staticRect, GameBall& ball, double deltaTime);
 
     /*
     @brief

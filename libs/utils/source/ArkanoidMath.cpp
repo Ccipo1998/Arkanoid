@@ -83,9 +83,9 @@ namespace amath
         return sqrt(pow(vector.x, 2) + pow(vector.y, 2));
     }
 
-	void normalize(vec2f& vector)
+    vec2f normalize(vec2f& vector)
     {
-        vector /= length(vector);
+        return vector / length(vector);
     }
 
     float abs(float value)

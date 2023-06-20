@@ -7,28 +7,33 @@ namespace aphys
 
     void collisionResponse(const GameRect& staticRect, GameBall& ball, double deltaTime)
     {
-        /*
-        // retrieve old position
-        vec2f oldPos = ball.position - ball.GetDirection() * ball.speed * deltaTime;
+        float deltaX = .0f;
+        float deltaY = .0f;
 
-        // compute intersection point
-        if (ball.GetDirection().x > .0f && ball.GetDirection().y > .0f)
+        if (ball.GetDirection().x >= .0f && ball.GetDirection().y >= .0f)
         {
             // possible intersection on up or left edge
-
-            // this edge is the trajectory of the ball
-            vec2f p1 = vec2f(oldPos);
-            vec2f p2 = ball.position;
-            // upper edge
-            vec2f q1 = staticRect.position;
-            vec2f q2 = vec2f(staticRect.position.x + staticRect.width, staticRect.position.y);
-
-
-        }*/
-
-        // get length differences
-        float deltaX = staticRect.width - amath::abs(staticRect.position.x - ball.position.x);
-        float deltaY = staticRect.height - amath::abs(staticRect.position.y - ball.position.y);
+            deltaX = amath::abs(staticRect.position.x - ball.position.x) + ball.width;
+            deltaY = amath::abs(staticRect.position.y - ball.position.y) + ball.height;
+        }
+        else if (ball.GetDirection().x <= .0f && ball.GetDirection().y >= .0f)
+        {
+            // possible intersection on up or right edge
+            deltaX = staticRect.width - amath::abs(staticRect.position.x - ball.position.x);
+            deltaY = amath::abs(staticRect.position.y - ball.position.y) + ball.height;
+        }
+        else if (ball.GetDirection().x >= .0f && ball.GetDirection().y <= .0f)
+        {
+            // possible intersection on bottom or left edge
+            deltaX = amath::abs(staticRect.position.x - ball.position.x) + ball.width;
+            deltaY = staticRect.height - amath::abs(staticRect.position.y - ball.position.y);
+        }
+        else if (ball.GetDirection().x <= .0f && ball.GetDirection().y <= .0f)
+        {
+            // possible intersection on bottom or right edge
+            deltaX = staticRect.width - amath::abs(staticRect.position.x - ball.position.x);
+            deltaY = staticRect.height - amath::abs(staticRect.position.y - ball.position.y);
+        }
 
         // if the ball is already inside the rectangle it must be shifted back
         if ((deltaX >= .0f + epsilon && deltaX <= .0f - epsilon) || (deltaY >= .0f + epsilon && deltaY <= .0f - epsilon))
