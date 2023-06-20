@@ -1,7 +1,7 @@
 
 #include "ArkanoidPhysics.h"
 
-namespace phys
+namespace aphys
 {
     float epsilon = .0001f;
 
@@ -27,13 +27,13 @@ namespace phys
         }*/
 
         // get length differences
-        float deltaX = staticRect.width - math::abs(staticRect.position.x - ball.position.x);
-        float deltaY = staticRect.height - math::abs(staticRect.position.y - ball.position.y);
+        float deltaX = staticRect.width - amath::abs(staticRect.position.x - ball.position.x);
+        float deltaY = staticRect.height - amath::abs(staticRect.position.y - ball.position.y);
 
         // if the ball is already inside the rectangle it must be shifted back
         if ((deltaX >= .0f + epsilon && deltaX <= .0f - epsilon) || (deltaY >= .0f + epsilon && deltaY <= .0f - epsilon))
         {
-            ball.position -= ball.GetDirection() * math::length(vec2f(deltaX, deltaY));
+            ball.position -= ball.GetDirection() * amath::length(vec2f(deltaX, deltaY));
         }
 
         // select the correct way to flip direction

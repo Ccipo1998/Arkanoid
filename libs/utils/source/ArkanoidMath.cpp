@@ -21,7 +21,7 @@ vec2ui::vec2ui(unsigned int x, unsigned int y)
     , y(y)
     {}
 
-namespace math
+namespace amath
 {
     float epsilon = .0001f;
 

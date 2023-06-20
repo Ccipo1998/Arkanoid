@@ -101,8 +101,12 @@ void Level::Update(double deltaTime)
         if (!this->gameWallList[i]->IsEnabled())
             continue;
 
-        if (phys::collisionCheck(*this->gameWallList[i], *this->gameBallList[0]))
-            phys::collisionResponse(*this->gameWallList[i], *this->gameBallList[0], deltaTime);
+        if (aphys::collisionCheck(*this->gameWallList[i], *this->gameBallList[0]))
+        {
+            aphys::collisionResponse(*this->gameWallList[i], *this->gameBallList[0], deltaTime);
+
+            this->gameWallList[i]->Hit();
+        }
     }
 
     // game boundaries
@@ -112,8 +116,8 @@ void Level::Update(double deltaTime)
         if (!this->gameBoundaryList[i]->IsEnabled())
             continue;
 
-        if (phys::collisionCheck(*this->gameBoundaryList[i], *this->gameBallList[0]))
-            phys::collisionResponse(*this->gameBoundaryList[i], *this->gameBallList[0], deltaTime);
+        if (aphys::collisionCheck(*this->gameBoundaryList[i], *this->gameBallList[0]))
+            aphys::collisionResponse(*this->gameBoundaryList[i], *this->gameBallList[0], deltaTime);
     }
 
     // game platforms
@@ -123,8 +127,8 @@ void Level::Update(double deltaTime)
         if (!this->gamePlatformList[i]->IsEnabled())
             continue;
 
-        if (phys::collisionCheck(*this->gamePlatformList[i], *this->gameBallList[0]))
-            phys::collisionResponse(*this->gamePlatformList[i], *this->gameBallList[0], deltaTime);
+        if (aphys::collisionCheck(*this->gamePlatformList[i], *this->gameBallList[0]))
+            aphys::collisionResponse(*this->gamePlatformList[i], *this->gameBallList[0], deltaTime);
     }
 }
 

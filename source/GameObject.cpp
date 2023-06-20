@@ -144,7 +144,8 @@ void GameWall::Update(double deltaTime)
 	if (!this->enabled)
 		return;
 
-	// TODO
+	if (this->hitCount == 0)
+		this->Disable();
 }
 
 /*
@@ -183,7 +184,7 @@ vec2f GameBall::GetDirection()
 void GameBall::SetDirection(vec2f newDirection)
 {
 	this->direction = newDirection;
-	math::normalize(this->direction);
+	amath::normalize(this->direction);
 }
 
 void GameBall::Launch()

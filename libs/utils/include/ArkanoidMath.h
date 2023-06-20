@@ -90,7 +90,7 @@ struct vec2ui
     unsigned int y;
 };
 
-namespace math
+namespace amath
 {
 	/*
 	@brief

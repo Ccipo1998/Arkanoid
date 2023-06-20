@@ -3,7 +3,7 @@
 
 #include "GameObject.h"
 
-namespace phys
+namespace aphys
 {
     /*
     @brief
