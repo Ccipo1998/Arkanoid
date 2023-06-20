@@ -194,6 +194,7 @@ void GameManager::GenerateRandomLevel()
     float platformWidth = 80.0f;
     float platformHeight = 20.0f;
     float ballSize = 10.0f;
+    float startingBallOffset = 10.0f;
 
     // level spaces initializations
     this->currentLevel = new Level();
@@ -234,7 +235,7 @@ void GameManager::GenerateRandomLevel()
     // game ball
     this->currentLevel->AddGameBall(new GameBall(
         vec2f(this->currentLevel->GetPlatformSpace()->position.x + (this->currentLevel->GetPlatformSpace()->width / 2.0f) - (ballSize / 2.0f),
-                this->currentLevel->GetPlatformSpace()->position.y + (this->currentLevel->GetPlatformSpace()->height / 2.0f) - (ballSize / 2.0f) - platformHeight / 2.0f),
+                this->currentLevel->GetPlatformSpace()->position.y + (this->currentLevel->GetPlatformSpace()->height / 2.0f) - (platformHeight / 2.0f) - (ballSize / 2.0f) - startingBallOffset),
         ballSize, &this->BallPrefab[0], .5f));
 
     delete grid;

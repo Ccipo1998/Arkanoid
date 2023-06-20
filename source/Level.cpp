@@ -1,5 +1,6 @@
 
 #include "Level.h"
+#include "ArkanoidPhysics.h"
 
 Level::Level()
     : background(nullptr)
@@ -91,43 +92,70 @@ void Level::Update(double deltaTime)
     for (unsigned int i = 0; i < this->gameWallList.GetSize(); ++i)
         this->gameWallList[i]->Update(deltaTime);
 
-    
+    // collision detection and response
+
+    // game walls
+    for (unsigned int i = 0; i < this->gameWallList.GetSize(); ++i)
+    {
+        // only if enabled
+        if (!this->gameWallList[i]->IsEnabled())
+            continue;
+
+        if (phys::collisionCheck(*this->gameWallList[i], *this->gameBallList[0]))
+            phys::collisionResponse(*this->gameWallList[i], *this->gameBallList[0], deltaTime);
+    }
+
+    // game boundaries
+    for (unsigned int i = 0; i < this->gameBoundaryList.GetSize(); ++i)
+    {
+        // only if enabled
+        if (!this->gameBoundaryList[i]->IsEnabled())
+            continue;
+
+        if (phys::collisionCheck(*this->gameBoundaryList[i], *this->gameBallList[0]))
+            phys::collisionResponse(*this->gameBoundaryList[i], *this->gameBallList[0], deltaTime);
+    }
+
+    // game platforms
+    for (unsigned int i = 0; i < this->gamePlatformList.GetSize(); ++i)
+    {
+        // only if enabled
+        if (!this->gamePlatformList[i]->IsEnabled())
+            continue;
+
+        if (phys::collisionCheck(*this->gamePlatformList[i], *this->gameBallList[0]))
+            phys::collisionResponse(*this->gamePlatformList[i], *this->gameBallList[0], deltaTime);
+    }
 }
 
 void Level::Render()
 {
     // render background
-    if (this->background != nullptr && this->background->IsEnabled())
+    if (this->background != nullptr)
         this->background->Render();
 
     // render boundaries
     #ifdef BUILD_DEBUG
         for (unsigned int i = 0; i < this->gameBoundaryList.GetSize(); ++i)
-        {
-            if (this->gameBoundaryList[i]->IsEnabled())
-                this->gameBoundaryList[i]->Render();
-        }
+            this->gameBoundaryList[i]->Render();
     #endif
 
     // render walls
     for (unsigned int i = 0; i < this->gameWallList.GetSize(); ++i)
     {
-        if (this->gameWallList[i]->IsEnabled())
-            this->gameWallList[i]->Render();
+        this->gameWallList[i]->Render();
     }
 
     // render platforms
     for (unsigned int i = 0; i < this->gamePlatformList.GetSize(); ++i)
     {
-        if (this->gamePlatformList[i]->IsEnabled())
-            this->gamePlatformList[i]->Render();
+        this->gamePlatformList[i]->Render();
     }
 
     // render balls
     for (unsigned int i = 0; i < this->gameBallList.GetSize(); ++i)
     {
-        if (this->gameBallList[i]->IsEnabled())
-            this->gameBallList[i]->Render();
+        this->gameBallList[i]->Render();
     }
 }
 

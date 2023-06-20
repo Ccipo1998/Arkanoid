@@ -32,12 +32,38 @@ struct vec2f
 		return vec2f(this->x + v.x, this->y + v.y);
 	}
 
+	vec2f& operator/=(float f)
+	{
+		this->x = this->x / f;
+		this->y = this->y / f;
+		
+		return *this;
+	}
+
 	vec2f& operator+=(vec2f v)
 	{
 		this->x = this->x + v.x;
 		this->y = this->y + v.y;
 		
 		return *this;
+	}
+
+	vec2f& operator-=(vec2f v)
+	{
+		this->x = this->x - v.x;
+		this->y = this->y - v.y;
+		
+		return *this;
+	}
+
+	vec2f operator-()
+	{
+		return vec2f(-this->x, -this->y);
+	}
+
+	vec2f operator-(vec2f v)
+	{
+		return vec2f(this->x - v.x, this->y - v.y);
 	}
 
     float x;
@@ -63,3 +89,58 @@ struct vec2ui
     unsigned int x;
     unsigned int y;
 };
+
+namespace math
+{
+	/*
+	@brief
+	Normalize the vector
+	@param vector: vector reference
+	*/
+	void normalize(vec2f& vector);
+
+	/*
+	@brief
+	Return the power a number for an exponent
+	@param number: the number to power
+	@param exponent: the exponent
+	*/
+	float pow(float number, int exponent);
+
+	/*
+	@brief
+	Return the minimum between two numbers
+	@param first: first number
+	@param second: second number
+	*/
+	float min(float first, float second);
+
+	/*
+	@brief
+	Return the maximum between two numbers
+	@param first: first number
+	@param second: second number
+	*/
+	float max(float first, float second);
+
+	/*
+	@brief
+	Return the square root of the number (binary search)
+	@param number: the number to square root
+	*/
+	float sqrt(float number);
+
+	/*
+	@brief
+	Return the lenght of the vector
+	@param vector: the reference to the vector
+	*/
+	float length(const vec2f& vector);
+
+	/*
+	@bried
+	Return the absolute value
+	@param value: the value to use
+	*/
+	float abs(float value);
+}

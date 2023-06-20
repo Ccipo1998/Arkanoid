@@ -1,5 +1,9 @@
 
 #include "GameObject.h"
+#include "Singleton.hpp"
+#include "GameManager.h"
+#include "ArkanoidPhysics.h"
+#include "ArkanoidMath.h"
 
 GameObject::GameObject()
 	: enabled(true)
@@ -64,6 +68,9 @@ GameRect::GameRect(vec2f position, float width, float height, GamePrefab* prefab
 
 void GameRect::Render()
 {
+	if (!this->enabled)
+		return;
+
 	// check if the game rect has a valid prefab to use
 	if (this->prefab == nullptr || this->prefab->GetTexture() == nullptr)
 		return;
@@ -82,6 +89,9 @@ GamePrefab* GameRect::GetPrefab()
 
 void GameRect::Update(double deltaTime)
 {
+	if (!this->enabled)
+		return;
+	
 	// TODO
 }
 
@@ -131,6 +141,9 @@ void GameWall::Hit()
 
 void GameWall::Update(double deltaTime)
 {
+	if (!this->enabled)
+		return;
+
 	// TODO
 }
 
@@ -162,19 +175,30 @@ GameBall::GameBall(vec2f position, float size, GamePrefab* prefab, float speed)
 	, speed(speed)
 	{}
 
-vec2f GameBall::GetVelocity()
+vec2f GameBall::GetDirection()
 {
-	return this->velocity;
+	return this->direction;
+}
+
+void GameBall::SetDirection(vec2f newDirection)
+{
+	this->direction = newDirection;
+	math::normalize(this->direction);
 }
 
 void GameBall::Launch()
 {
-	this->velocity = vec2f(.0f, -1.0f);
+	this->direction = vec2f(.5f, -.5f);
 }
 
 void GameBall::Update(double deltaTime)
 {
-	this->position += this->velocity * this->speed * deltaTime;
+	// only if the game ball is enabled
+	if (!this->enabled)
+		return;
+
+	// position update
+	this->position += this->direction * this->speed * deltaTime;
 }
 
 GamePlatform::GamePlatform(vec2f position, float width, float height, GamePrefab* prefab)
@@ -190,5 +214,8 @@ void GamePlatform::HandleEvent(SDL_Event& sdlEvent)
 
 void GamePlatform::Update(double deltaTime)
 {
+	if (!this->enabled)
+		return;
+
 	// TODO
 }

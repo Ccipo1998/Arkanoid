@@ -89,7 +89,7 @@ public:
 
 	/*
 	@brief
-	Game rectangle generic rendering method
+	Game rect rendering if the game rect is enabled
 	*/
 	void Render();
 	
@@ -101,7 +101,7 @@ public:
 
 	/*
 	@brief
-	Operations to execute at each frame
+	Operations to execute at each frame if the game rect is enabled
 	@param deltaTime: the time passed from the last frame
 	*/
 	void Update(double deltaTime) override;
@@ -181,7 +181,7 @@ public:
 
 	/*
 	@brief
-	Operations to execute at each frame
+	Operations to execute at each frame if the game wall is enabled
 	@param deltaTime: the time passed from the last frame
 	*/
 	void Update(double deltaTime) override;
@@ -210,9 +210,16 @@ public:
 
 	/*
 	@brief
-	Current velocity getter
+	Current direction getter
 	*/
-	vec2f GetVelocity();
+	vec2f GetDirection();
+
+	/*
+	@brief
+	Direction setter
+	@param newDirection: the vector representing the new direction (it is normalized inside the setter)
+	*/
+	void SetDirection(vec2f newDirection);
 
 	/*
 	@brief
@@ -222,7 +229,7 @@ public:
 
 	/*
 	@brief
-	Operations to execute at each frame
+	Operations to execute at each frame if the game ball is enabled
 	@param deltaTime: the time passed from the last frame
 	*/
 	void Update(double deltaTime) override;
@@ -231,7 +238,7 @@ public:
 
 private:
 
-	vec2f velocity;
+	vec2f direction;
 
 };
 
@@ -260,7 +267,7 @@ public:
 
 	/*
 	@brief
-	Operations to execute at each frame
+	Operations to execute at each frame if the game platform is enabled
 	@param deltaTime: the time passed from the last frame
 	*/
 	void Update(double deltaTime) override;

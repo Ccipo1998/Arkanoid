@@ -4,6 +4,7 @@ project(utils VERSION 0.1.0)
 
 add_library(utils STATIC # if SHARED -> compile errors when modifying library files
 source/ArkanoidMath.cpp
+source/ArkanoidPhysics.cpp
 include/ArkanoidList.hpp
 include/Singleton.hpp)
 
