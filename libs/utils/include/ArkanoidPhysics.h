@@ -7,6 +7,14 @@ namespace aphys
 {
     /*
     @brief
+    Physical collision response between a static game rectangle and a game platform
+    @param staticRect: reference to the game rectangle which doesn't move
+    @param platform: reference to the game platform
+    */
+    void collisionResponse(const GameRect& staticRect, GamePlatform& platform);
+
+    /*
+    @brief
     Physical collision response between a static game rectangle and a game ball
     @param staticRect: reference to the game rectangle which doesn't move
     @param movableRect: reference to the game ball
@@ -15,11 +23,20 @@ namespace aphys
 
     /*
     @brief
-    Check if the two game rectangles are colliding
-    @param rect1: the first game rectangle
-    @param rect2: the second game rectangle
+    Check if a game rectangles and a game ball collided, taking into account last ball's movement
+    @param rect: the game rectangle
+    @param ball: the game ball
+    @param deltaTime: the time passed from last frame
     */
-    bool collisionCheck(const GameRect& rect1, GameRect& rect2);
+    bool collisionCheck(const GameRect& rect, GameBall& ball, double deltaTime);
+
+    /*
+    @brief
+    Check if a game rectangles and a game platform collided, taking into account last platform's movement
+    @param rect: the game rectangle
+    @param ball: the game platform
+    */
+    bool collisionCheck(const GameRect& rect, GamePlatform& platform);
 
     /*
     @brief

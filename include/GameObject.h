@@ -267,9 +267,20 @@ public:
 
 	/*
 	@brief
+	Velocity getter
+	*/
+	vec2f GetVelocity();
+	
+	/*
+	@brief
 	Operations to execute at each frame if the game platform is enabled
 	@param deltaTime: the time passed from the last frame
 	*/
 	void Update(double deltaTime) override;
+
+private:
+
+	vec2f velocity;
+	bool inputReceived;
 
 };

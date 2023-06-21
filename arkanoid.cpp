@@ -52,6 +52,8 @@ int main() {
 
     // hide mouse cursor
     SDL_ShowCursor(SDL_DISABLE);
+    // take mouse outside window
+    SDL_CaptureMouse(SDL_TRUE);
 
     // loading assets and levels
     manager->LoadPrefabs();

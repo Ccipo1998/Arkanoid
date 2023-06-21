@@ -203,13 +203,28 @@ void GameBall::Update(double deltaTime)
 
 GamePlatform::GamePlatform(vec2f position, float width, float height, GamePrefab* prefab)
 	: GameRect(position, width, height, prefab)
+	, velocity(position)
+	, inputReceived(false)
 	{}
 
 void GamePlatform::HandleEvent(SDL_Event& sdlEvent)
 {
 	// platform motion
 	if (sdlEvent.type == SDL_MOUSEMOTION)
-		this->position.x = sdlEvent.motion.x - (this->width / 2.0f);
+	{
+		// new position
+		vec2f newPos = vec2f(sdlEvent.motion.x - (this->width / 2.0f), this->position.y);
+
+		// update velocity
+		this->velocity = newPos - this->position;
+
+		this->inputReceived = true;
+	}
+}
+
+vec2f GamePlatform::GetVelocity()
+{
+	return this->velocity;
 }
 
 void GamePlatform::Update(double deltaTime)
@@ -217,5 +232,13 @@ void GamePlatform::Update(double deltaTime)
 	if (!this->enabled)
 		return;
 
-	// TODO
+	if (!this->inputReceived)
+	{
+		this->velocity = vec2f();
+
+		return;
+	}
+
+	this->position += this->velocity;
+	this->inputReceived = false;
 }

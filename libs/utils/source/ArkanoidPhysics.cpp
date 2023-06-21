@@ -5,6 +5,18 @@ namespace aphys
 {
     float epsilon = .0001f;
 
+    void collisionResponse(const GameRect& staticRect, GamePlatform& platform)
+    {
+        // only checking on x
+        float distanceBefore = staticRect.position.x - (platform.position.x - platform.GetVelocity().x);
+
+        // 1.0f added to avoid another collision at next frame
+        if (distanceBefore > .0f)
+            platform.position.x = staticRect.position.x - platform.width + 1.0f;
+        else if (distanceBefore < .0f)
+            platform.position.x = staticRect.position.x + staticRect.width + 1.0f;
+    }
+
     void collisionResponse(const GameRect& staticRect, GameBall& ball, double deltaTime)
     {
         float deltaX = .0f;
@@ -53,11 +65,31 @@ namespace aphys
         ball.position += ball.GetDirection() * ball.speed * deltaTime;
     }
 
-    bool collisionCheck(const GameRect& rect1, GameRect& rect2)
+    bool collisionCheck(const GameRect& rect, GameBall& ball, double deltaTime)
     {
-        bool checkX = intersection(rect1.position.x, rect1.position.x + rect1.width, rect2.position.x, rect2.position.x + rect2.width);
-        bool checkY = intersection(rect1.position.y, rect1.position.y + rect1.height, rect2.position.y, rect2.position.y + rect2.height);
+        // points need to be placed in the right order inside the call to intersection()
+        float minX = amath::min(ball.position.x, ball.position.x - (ball.GetDirection().x * ball.speed * deltaTime));
+        float maxX = amath::max(ball.position.x - (ball.GetDirection().x * ball.speed * deltaTime), ball.position.x + ball.width);
+        float minY = amath::min(ball.position.y, ball.position.y - (ball.GetDirection().y * ball.speed * deltaTime));
+        float maxY = amath::max(ball.position.y - (ball.GetDirection().y * ball.speed * deltaTime), ball.position.y + ball.height);
+        
+        bool checkX = intersection(rect.position.x, rect.position.x + rect.width, minX, maxX);
+        bool checkY = intersection(rect.position.y, rect.position.y + rect.height, minY, maxY);
+    
+        return checkX && checkY;
+    }
 
+    bool collisionCheck(const GameRect& rect, GamePlatform& platform)
+    {
+        // points need to be placed in the right order inside the call to intersection()
+        float minX = amath::min(platform.position.x, platform.position.x - platform.GetVelocity().x);
+        float maxX = amath::max(platform.position.x - platform.GetVelocity().x, platform.position.x + platform.width);
+        float minY = amath::min(platform.position.y, platform.position.y - platform.GetVelocity().y);
+        float maxY = amath::max(platform.position.y - platform.GetVelocity().y, platform.position.y + platform.height);
+        
+        bool checkX = intersection(rect.position.x, rect.position.x + rect.width, minX, maxX);
+        bool checkY = intersection(rect.position.y, rect.position.y + rect.height, minY, maxY);
+    
         return checkX && checkY;
     }
 
