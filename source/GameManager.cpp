@@ -96,6 +96,9 @@ bool GameManager::InitializeSDL(unsigned int windowWidth, unsigned int windowHei
         return false;
     }
 
+    // initialize random seed -> used for all the game
+    srand(time(nullptr));
+
     return true;
 }
 
@@ -201,9 +204,6 @@ void GameManager::GenerateRandomLevel()
     this->currentLevel = new Level();
     this->currentLevel->SetWallsSpace(new GameRect(vec2f(float(boundariesDepth), float(boundariesDepth)), this->windowWidth - (boundariesDepth * 2), (this->windowHeight - platformSpaceHeight - 100) - boundariesDepth, nullptr));
     this->currentLevel->SetPlatformSpace(new GameRect(vec2f(float(boundariesDepth), float(boundariesDepth) + this->currentLevel->GetWallsSpace()->height + 100), this->windowWidth - (boundariesDepth * 2), platformSpaceHeight, nullptr));
-
-    // initialize random seed
-    srand(time(nullptr));
 
     // pick random background
     this->currentLevel->SetBackground(new GameRect(vec2f(.0f, .0f), this->windowWidth, this->windowHeight, this->BackgroundsPrefabs[rand() % (this->BackgroundsPrefabs.GetSize() - 1)]));

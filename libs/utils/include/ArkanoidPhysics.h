@@ -7,6 +7,14 @@ namespace aphys
 {
     /*
     @brief
+    Physical collision response between a game platform and a game ball
+    @param platform: the reference to the game platform
+    @param ball: the reference to the game ball
+    */
+    void collisionResponse(const GamePlatform& platform, GameBall& ball);
+
+    /*
+    @brief
     Physical collision response between a static game rectangle and a game platform
     @param staticRect: reference to the game rectangle which doesn't move
     @param platform: reference to the game platform

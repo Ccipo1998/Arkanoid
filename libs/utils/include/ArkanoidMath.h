@@ -148,4 +148,13 @@ namespace amath
 	@param value: the value to use
 	*/
 	float abs(float value);
+
+	/*
+	@brief
+	Clamp the value inside the range [min, max]
+	@param value: the value to clamp
+	@param min: the minimum returned
+	@param max: the maximum returned
+	*/
+	float clamp(float value, float min, float max);
 }

@@ -64,9 +64,6 @@ vec2f Grid::GetRandomFreePosition()
         return nullptr;
     */
 
-    // initialize random seed
-    srand(time(nullptr));
-
     // get random index
     unsigned int index = rand() % (this->freeCells.GetSize() - 1);
     // get indices

@@ -5,6 +5,18 @@ namespace aphys
 {
     float epsilon = .0001f;
 
+    void collisionResponse(const GamePlatform& platform, GameBall& ball)
+    {
+        // special collision between the platform and the ball
+        // always up but with the x defined by the position of the collision compared to the center of the platform
+        
+        float maximumDistX = platform.width / 2.0f + ball.width / 2.0f;
+        float signedDistX = ((ball.position.x + (ball.width / 2.0f)) - (platform.position.x + (platform.width / 2.0f)));
+        float clampedDistX = amath::clamp(signedDistX / maximumDistX, -1.0f, 1.0f);
+
+        ball.SetDirection(vec2f(clampedDistX, -1.0f));
+    }
+
     void collisionResponse(const GameRect& staticRect, GamePlatform& platform)
     {
         // only checking on x
