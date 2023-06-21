@@ -64,6 +64,17 @@ vec2f Grid::GetRandomFreePosition()
         return nullptr;
     */
 
+    // last element
+    if (this->freeCells.GetSize() == 1)
+    {
+        // get indices
+        vec2ui ij = *this->freeCells[0];
+        // remove free position
+        this->freeCells.Remove(0);
+        
+        return this->grid[ij.x][ij.y];
+    }
+
     // get random index
     unsigned int index = rand() % (this->freeCells.GetSize() - 1);
     // get indices

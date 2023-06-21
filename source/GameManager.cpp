@@ -194,6 +194,7 @@ void GameManager::GenerateRandomLevel()
     unsigned int platformSpaceHeight = 200;
     unsigned int wallsNumberRow = 20;
     unsigned int wallsNumberColumn = 10;
+    unsigned int wallsNumber = wallsNumberRow * wallsNumberColumn / 2;
     float platformWidth = 80.0f;
     float platformHeight = 20.0f;
     float ballSize = 10.0f;
@@ -229,9 +230,8 @@ void GameManager::GenerateRandomLevel()
     // game walls
     Grid* grid = new Grid(this->currentLevel->GetWallsSpace()->width, this->currentLevel->GetWallsSpace()->height, wallsNumberRow, wallsNumberColumn, this->currentLevel->GetWallsSpace()->position);
 
-    unsigned int wallsNumber = wallsNumberRow * wallsNumberColumn;
     for (unsigned int i = 0; i < wallsNumber; ++i)
-        this->currentLevel->AddGameWall(new GameWall(grid->GetNextFreePosition(), grid->GetCellWidth(), grid->GetCellHeight(), this->WallPrefabs[rand() % (this->WallPrefabs.GetSize() - 1)]));
+        this->currentLevel->AddGameWall(new GameWall(grid->GetRandomFreePosition(), grid->GetCellWidth(), grid->GetCellHeight(), this->WallPrefabs[rand() % (this->WallPrefabs.GetSize() - 1)]));
 
     // game ball
     this->currentLevel->AddGameBall(new GameBall(
