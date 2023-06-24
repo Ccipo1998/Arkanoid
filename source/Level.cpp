@@ -64,15 +64,26 @@ void Level::HandleEvents(SDL_Event& sdlEvent)
         this->gamePlatformList[i]->HandleEvent(sdlEvent);
 
     // ball event
-    if (sdlEvent.type == SDL_MOUSEBUTTONDOWN && !this->levelStarted)
+    if (sdlEvent.type == SDL_MOUSEBUTTONDOWN)
     {
-        // launch the game ball
-        if (this->gameBallList.GetSize() > 0)
-        {
-            this->gameBallList[0]->Launch();
+        #ifdef BUILD_DEBUG
+            // launch the game ball many times
+            if (this->gameBallList.GetSize() > 0)
+            {
+                this->gameBallList[0]->position = vec2f(this->gamePlatformList[0]->position.x + this->gamePlatformList[0]->width / 2.0f - this->gameBallList[0]->width / 2.0f, this->gamePlatformList[0]->position.y - this->gameBallList[0]->height);
+                this->gameBallList[0]->Launch();
 
-            this->levelStarted = true;
-        }
+                this->levelStarted = true;
+            }
+        #else
+            // launch the game ball
+            if (this->gameBallList.GetSize() > 0 && !this->levelStarted)
+            {
+                this->gameBallList[0]->Launch();
+
+                this->levelStarted = true;
+            }
+        #endif
     }
 }
 

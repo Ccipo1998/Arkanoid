@@ -3,8 +3,29 @@
 
 #include "GameObject.h"
 
+struct ray2f
+{
+    vec2f origin;
+    vec2f direction;  
+};
+
+struct inter2f
+{
+    bool hit;
+    vec2f point;
+};
+
 namespace aphys
 {
+    /*
+    @brief
+    Perform the intersection test between a ray and an edge, returning a structure with the first collision point (if exists)
+    @param ray: reference to the ray
+    @param point1: the reference to the first point of the edge
+    @param point2: the reference to the second point of the edge
+    */
+    inter2f intersectionRayEdge(ray2f& ray, vec2f& point1, vec2f& point2);
+
     /*
     @brief
     Physical collision response between a game platform and a game ball

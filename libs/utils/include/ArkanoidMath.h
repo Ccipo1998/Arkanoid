@@ -99,6 +99,14 @@ namespace amath
 {
 	/*
 	@brief
+	Return the dot product between two vectors
+	@param vector1: the first vector
+	@param vector2: the second vector
+	*/
+	float dot(vec2f& vector1, vec2f& vector2);
+
+	/*
+	@brief
 	Normalize the vector
 	@param vector: vector to normalize
 	*/

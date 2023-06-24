@@ -25,6 +25,11 @@ namespace amath
 {
     float epsilon = .0001f;
 
+    float dot(vec2f& vector1, vec2f& vector2)
+    {
+        return vector1.x * vector2.x + vector1.y * vector2.y;
+    }
+
     float pow(float number, int exponent)
     {
         if (exponent == 0)
