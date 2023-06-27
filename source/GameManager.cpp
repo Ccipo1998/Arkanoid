@@ -194,12 +194,12 @@ void GameManager::GenerateRandomLevel()
     unsigned int platformSpaceHeight = 200;
     unsigned int wallsNumberRow = 20;
     unsigned int wallsNumberColumn = 10;
-    unsigned int wallsNumber = wallsNumberRow * wallsNumberColumn / 2;
+    unsigned int wallsNumber = 1;
     float platformWidth = 80.0f;
     float platformHeight = 20.0f;
     float ballSize = 10.0f;
     float startingBallOffset = 10.0f;
-    float ballSpeed = .7f;
+    float ballSpeed = 150.f;
 
     // level spaces initializations
     this->currentLevel = new Level();

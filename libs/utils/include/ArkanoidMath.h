@@ -71,6 +71,16 @@ struct vec2f
 		return vec2f(this->x / f, this->y / f);
 	}
 
+	vec2f operator*(vec2f v)
+	{
+		return vec2f(this->x * v.x, this->y * v.y);
+	}
+
+	bool operator==(vec2f v)
+	{
+		return this->x == v.x && this->y == v.y;
+	}
+
     float x;
     float y;
 };

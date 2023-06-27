@@ -91,6 +91,8 @@ void Level::Update(double deltaTime)
 {
     // call updates of platform, balls and walls
 
+    inter2f inter;
+
     for (unsigned int i = 0; i < this->gamePlatformList.GetSize(); ++i)
         this->gamePlatformList[i]->Update(deltaTime);
 
@@ -119,7 +121,8 @@ void Level::Update(double deltaTime)
         if (!this->gamePlatformList[i]->IsEnabled())
             continue;
 
-        if (aphys::collisionCheck(*this->gamePlatformList[i], *this->gameBallList[0], deltaTime))
+        inter = aphys::collisionCheck(*this->gamePlatformList[i], *this->gameBallList[0], deltaTime);
+        if (inter.hit)
             aphys::collisionResponse(*this->gamePlatformList[i], *this->gameBallList[0]);
     }
 
@@ -130,9 +133,10 @@ void Level::Update(double deltaTime)
         if (!this->gameWallList[i]->IsEnabled())
             continue;
 
-        if (aphys::collisionCheck(*this->gameWallList[i], *this->gameBallList[0], deltaTime))
+        inter = aphys::collisionCheck(*this->gameWallList[i], *this->gameBallList[0], deltaTime);
+        if (inter.hit)
         {
-            aphys::collisionResponse(*this->gameWallList[i], *this->gameBallList[0], deltaTime);
+            aphys::collisionResponse(*this->gameBallList[0], inter, deltaTime);
 
             this->gameWallList[i]->Hit();
         }
@@ -145,8 +149,9 @@ void Level::Update(double deltaTime)
         if (!this->gameBoundaryList[i]->IsEnabled())
             continue;
 
-        if (aphys::collisionCheck(*this->gameBoundaryList[i], *this->gameBallList[0], deltaTime))
-            aphys::collisionResponse(*this->gameBoundaryList[i], *this->gameBallList[0], deltaTime);
+        inter = aphys::collisionCheck(*this->gameBoundaryList[i], *this->gameBallList[0], deltaTime);
+        if (inter.hit)
+            aphys::collisionResponse(*this->gameBallList[0], inter, deltaTime);
     }
 
     // if level is not started, the ball needs to move with the platform -> AFTER platform collision detection and update

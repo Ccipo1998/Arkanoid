@@ -5,7 +5,7 @@ namespace aphys
 {
     float epsilon = .0001f;
 
-    inter2f intersectionRayEdge(ray2f& ray, vec2f& point1, vec2f& point2)
+    void intersectionRayEdge(ray2f& ray, vec2f& point1, vec2f& point2, inter2f& inter)
     {
         vec2f v1 = ray.origin - point1;
         vec2f v2 = point2 - point1;
@@ -15,12 +15,19 @@ namespace aphys
         float t1 = (v2.x * v1.y - v2.y * v1.x) / amath::dot(v2, v3);
         float t2 = amath::dot(v1, v3) / amath::dot(v2, v3);
 
-        if (t1 >= .0f && .0f <= t2 <= 1.f)
+        if (t1 > ray.length)
         {
-            return inter2f { true, ray.origin + ray.direction * t1 };
+            inter = { false };
+            return;
         }
 
-        return inter2f { false, vec2f() };
+        if (t1 >= .0f && .0f <= t2 && t2 <= 1.f)
+        {
+            inter = { true, ray.origin + ray.direction * t1, t1 };
+            return;
+        }
+
+        inter = { false };
     }
 
     void collisionResponse(const GamePlatform& platform, GameBall& ball)
@@ -47,34 +54,61 @@ namespace aphys
             platform.position.x = staticRect.position.x + staticRect.width + 1.0f;
     }
 
-    void collisionResponse(const GameRect& staticRect, GameBall& ball, double deltaTime)
+    void collisionResponse(GameBall& ball, inter2f& inter, double deltaTime)
     {
+        // shift back the ball
+        ball.position -= ball.GetDirection() * ball.speed * deltaTime;
+
+        // time to collision
+        double deltaT = inter.distance * deltaTime / (ball.speed * deltaTime);
+
+        // move ball to collision
+        ball.position += ball.GetDirection() * ball.speed * deltaT;
+
+        // set new ball dir
+        ball.SetDirection(ball.GetDirection() * inter.bounce);
+
+        // move the ball in the right direction
+        if (deltaT == deltaTime)
+            ball.position += ball.GetDirection(); // * 1.f
+        else
+            ball.position += ball.GetDirection() * ball.speed * (deltaTime - deltaT);
+    }
+
+    inter2f collisionCheck(const GameRect& rect, GameBall& ball, double deltaTime)
+    {
+        if (ball.GetDirection() == vec2f())
+            return inter2f { false };
+
         vec2f rectPoint;
         vec2f ballPoint;
         vec2f dir;
 
         ray2f ray;
+        double rayLength;
         vec2f point1;
         vec2f point2;
         inter2f inter;
-        vec2f newDir;
         float dot;
         vec2f perp;
+        vec2f oldPos;
 
-        // shift back the ball
-        ball.position -= ball.GetDirection() * ball.speed * deltaTime;
+        // old ball position
+        oldPos = ball.position - ball.GetDirection() * ball.speed * deltaTime;
+
+        // ray length
+        rayLength = ball.speed * deltaTime;
 
         // ball coming from upper left
         if (ball.GetDirection().x >= .0f && ball.GetDirection().y >= .0f)
         {
             // use upper left point of the rect
-            rectPoint = staticRect.position;
+            rectPoint = rect.position;
             // use bottom right point of the ball
-            ballPoint = ball.position + vec2f(ball.width, ball.height);
+            ballPoint = oldPos + vec2f(ball.width, ball.height);
 
             // check if the collision happened on left or top edge of the rect
             dir = amath::normalize(rectPoint - ballPoint);
-
             // perpendicular vector to dir and dot with the ball direction
             perp = vec2f(-dir.y, dir.x);
             dot = amath::dot(ball.GetDirection(), perp);
@@ -82,48 +116,48 @@ namespace aphys
             // compare perpendicular and ball directions
             if (dot < .0f)
             {
-                // intersection on top edge
-                ray = { ballPoint, ball.GetDirection() };
-                point1 = staticRect.position;
-                point2 = vec2f(point1.x + staticRect.width + ball.width, point1.y);
+                // intersection test on top edge
+                point1 = rect.position;
+                point2 = vec2f(point1.x + rect.width, point1.y);
 
-                inter = intersectionRayEdge(ray, point1, point2);
+                // ray from lower left ball's point
+                ray = { vec2f(oldPos.x, oldPos.y + ball.height), ball.GetDirection(), rayLength };
+                intersectionRayEdge(ray, point1, point2, inter);
 
-                // new direction
-                newDir = vec2f(ball.GetDirection().x, -ball.GetDirection().y);
+                // add bounce to intersection
+                inter.bounce = vec2f(1.f, -1.f);
             }
             else if (dot > .0f)
             {
-                // intersection on left edge
-                ray = { ballPoint, ball.GetDirection() };
-                point1 = staticRect.position;
-                point2 = vec2f(point1.x, point1.y + staticRect.height + ball.height);
+                // intersection test on left edge
+                point1 = rect.position;
+                point2 = vec2f(point1.x, point1.y + rect.height);
 
-                inter = intersectionRayEdge(ray, point1, point2);
+                // ray from top right ball's point
+                ray = { vec2f(oldPos.x + ball.width, oldPos.y), ball.GetDirection(), rayLength };
+                intersectionRayEdge(ray, point1, point2, inter);
 
-                // new direction
-                newDir = vec2f(-ball.GetDirection().x, ball.GetDirection().y);
+                // add bounce to intersection
+                inter.bounce = vec2f(-1.f, 1.f);
             }
             else
             {
                 // same directions -> intersection point is the top left point of the rect
-                inter = { true, rectPoint };
-
-                // new direction
-                newDir = -ball.GetDirection();
+                inter = { true, rectPoint, amath::length(ballPoint - rectPoint) };
+                // add bounce to intersection
+                inter.bounce = vec2f(-1.f, -1.f);
             }
         }
         // ball coming from upper right
         else if (ball.GetDirection().x <= .0f && ball.GetDirection().y >= .0f)
         {
             // use upper right point of the rect
-            rectPoint = vec2f(staticRect.position.x + staticRect.width, staticRect.position.y);
+            rectPoint = vec2f(rect.position.x + rect.width, rect.position.y);
             // use bottom left point of the ball
-            ballPoint = vec2f(ball.position.x, ball.position.y + ball.height);
+            ballPoint = oldPos + vec2f(.0f, ball.height);
 
             // check if the collision happened on right or top edge of the rect
             dir = amath::normalize(rectPoint - ballPoint);
-
             // perpendicular vector to dir and dot with the ball direction
             perp = vec2f(-dir.y, dir.x);
             dot = amath::dot(ball.GetDirection(), perp);
@@ -131,44 +165,45 @@ namespace aphys
             // compare perpendicular and ball directions
             if (dot < .0f)
             {
-                // intersection on right edge
-                ray = { ballPoint, ball.GetDirection() };
-                point1 = vec2f(staticRect.position.x + staticRect.width, staticRect.position.y);
-                point2 = vec2f(point1.x, point1.y + staticRect.height + ball.height);
+                // intersection test on right edge
+                point1 = vec2f(rect.position.x + rect.width, rect.position.y);
+                point2 = vec2f(point1.x, point1.y + rect.height);
 
-                inter = intersectionRayEdge(ray, point1, point2);
+                // ray from upper left ball's point
+                ray = { oldPos, ball.GetDirection(), rayLength };
+                intersectionRayEdge(ray, point1, point2, inter);
 
-                // new direction
-                newDir = vec2f(-ball.GetDirection().x, ball.GetDirection().y);
+                // add bounce to intersection
+                inter.bounce = vec2f(-1.f, 1.f);
             }
             else if (dot > .0f)
             {
-                // intersection on top edge
-                ray = { ballPoint, ball.GetDirection() };
-                point1 = vec2f(staticRect.position.x - ball.width, staticRect.position.y);
-                point2 = vec2f(point1.x + staticRect.width, point1.y);
+                // intersection test on top edge
+                point1 = rect.position;
+                point2 = vec2f(point1.x + rect.width, point1.y);
 
-                inter = intersectionRayEdge(ray, point1, point2);
+                // ray from bottom right ball's point
+                ray = { oldPos + vec2f(ball.width, ball.height), ball.GetDirection(), rayLength };
+                intersectionRayEdge(ray, point1, point2, inter);
 
-                // new direction
-                newDir = vec2f(-ball.GetDirection().x, ball.GetDirection().y);
+                // add bounce to intersection
+                inter.bounce = vec2f(1.f, -1.f);
             }
             else
             {
-                // same directions -> intersection point is the top right point of the rect
-                inter = { true, rectPoint };
-
-                // new direction
-                newDir = -ball.GetDirection();
+                // same directions -> intersection point is the top rigth point of the rect
+                inter = { true, rectPoint, amath::length(ballPoint - rectPoint) };
+                // add bounce to intersection
+                inter.bounce = vec2f(-1.f, -1.f);
             }
         }
         // ball coming from lower left
         else if (ball.GetDirection().x >= .0f && ball.GetDirection().y <= .0f)
         {
             // use lower left point of the rect
-            rectPoint = vec2f(staticRect.position.x, staticRect.position.y + staticRect.height);
+            rectPoint = vec2f(rect.position.x, rect.position.y + rect.height);
             // use top right point of the ball
-            ballPoint = vec2f(ball.position.x + ball.width, ball.position.y);
+            ballPoint = vec2f(oldPos.x + ball.width, oldPos.y);
 
             // check if the collision happened on left or bottom edge of the rect
             dir = amath::normalize(rectPoint - ballPoint);
@@ -181,43 +216,44 @@ namespace aphys
             if (dot > .0f)
             {
                 // intersection on bottom edge
-                ray = { ballPoint, ball.GetDirection() };
-                point1 = vec2f(staticRect.position.x, staticRect.position.y + staticRect.height);
-                point2 = vec2f(point1.x + staticRect.width + ball.width, point1.y);
+                point1 = vec2f(rect.position.x, rect.position.y + rect.height);
+                point2 = vec2f(point1.x + rect.width, point1.y);
 
-                inter = intersectionRayEdge(ray, point1, point2);
+                // ray from top left ball's point
+                ray = { oldPos, ball.GetDirection(), rayLength };
+                intersectionRayEdge(ray, point1, point2, inter);
 
-                // new direction
-                newDir = vec2f(ball.GetDirection().x, -ball.GetDirection().y);
+                // add bounce to intersection
+                inter.bounce = vec2f(1.f, -1.f);
             }
             else if (dot < .0f)
             {
                 // intersection on left edge
-                ray = { ballPoint, ball.GetDirection() };
-                point1 = vec2f(staticRect.position.x, staticRect.position.y - ball.height);
-                point2 = vec2f(point1.x, point1.y + staticRect.height);
+                point1 = rect.position;
+                point2 = vec2f(point1.x, point1.y + rect.height);
 
-                inter = intersectionRayEdge(ray, point1, point2);
+                // ray from lower right ball's point
+                ray = { oldPos + vec2f(ball.width, ball.height), ball.GetDirection(), rayLength };
+                intersectionRayEdge(ray, point1, point2, inter);
 
-                // new direction
-                newDir = vec2f(-ball.GetDirection().x, ball.GetDirection().y);
+                // add bounce to intersection
+                inter.bounce = vec2f(-1.f, 1.f);
             }
             else
             {
                 // same directions -> intersection point is the bottom left point of the rect
-                inter = { true, rectPoint };
-
-                // new direction
-                newDir = -ball.GetDirection();
+                inter = { true, rectPoint, amath::length(ballPoint - rectPoint) };
+                // add bounce to intersection
+                inter.bounce = vec2f(-1.f, -1.f);
             }
         }
         // ball coming from lower right
         else
         {
             // use lower right point of the rect
-            rectPoint = vec2f(staticRect.position.x + staticRect.width, staticRect.position.y + staticRect.height);
+            rectPoint = vec2f(rect.position.x + rect.width, rect.position.y + rect.height);
             // use top left point of the ball
-            ballPoint = vec2f(ball.position.x, ball.position.y);
+            ballPoint = oldPos;
 
             // check if the collision happened on right or bottom edge of the rect
             dir = amath::normalize(rectPoint - ballPoint);
@@ -230,65 +266,39 @@ namespace aphys
             if (dot > .0f)
             {
                 // intersection on right edge
-                ray = { ballPoint, ball.GetDirection() };
-                point1 = vec2f(staticRect.position.x + staticRect.width, staticRect.position.y - ball.height);
-                point2 = vec2f(point1.x, point1.y + staticRect.height);
+                point1 = vec2f(rect.position.x + rect.width, rect.position.y);
+                point2 = vec2f(point1.x, point1.y + rect.height);
 
-                inter = intersectionRayEdge(ray, point1, point2);
+                // ray from lower left ball's point
+                ray = { vec2f(oldPos.x, oldPos.y + ball.height), ball.GetDirection(), rayLength };
+                intersectionRayEdge(ray, point1, point2, inter);
 
-                // new direction
-                newDir = vec2f(-ball.GetDirection().x, ball.GetDirection().y);
+                // add bounce to intersection
+                inter.bounce = vec2f(-1.f, 1.f);
             }
             else if (dot < .0f)
             {
                 // intersection on bottom edge
-                ray = { ballPoint, ball.GetDirection() };
-                point1 = vec2f(staticRect.position.x - ball.width, staticRect.position.y + staticRect.height);
-                point2 = vec2f(point1.x + staticRect.width, point1.y);
+                point1 = vec2f(rect.position.x, rect.position.y + rect.height);
+                point2 = vec2f(point1.x + rect.width, point1.y);
 
-                inter = intersectionRayEdge(ray, point1, point2);
+                // ray from upper right ball's point
+                ray = { oldPos + vec2f(ball.width, .0f), ball.GetDirection(), rayLength };
+                intersectionRayEdge(ray, point1, point2, inter);
 
-                // new direction
-                newDir = vec2f(ball.GetDirection().x, -ball.GetDirection().y);
+                // add bounce to intersection
+                inter.bounce = vec2f(1.f, -1.f);
             }
             else
             {
                 // same directions -> intersection point is the bottom right point of the rect
-                inter = { true, rectPoint };
-
-                // new direction
-                newDir = -ball.GetDirection();
+                inter = { true, rectPoint, amath::length(ballPoint - rectPoint) };
+                // add bounce to intersection
+                inter.bounce = vec2f(-1.f, -1.f);
             }
         }
 
-        // time to collision
-        double deltaT = amath::length(inter.point - ballPoint) * deltaTime / (ball.speed * deltaTime);
-
-        // move ball to collision
-        ball.position += ball.GetDirection() * ball.speed * deltaT;
-
-        // move the ball in the right direction
-        if (deltaT == deltaTime)
-            ball.position += newDir; // * 1.f
-        else
-            ball.position += newDir * ball.speed * (deltaTime - deltaT);
-
-        // set new ball dir
-        ball.SetDirection(newDir);
-    }
-
-    bool collisionCheck(const GameRect& rect, GameBall& ball, double deltaTime)
-    {
-        // points need to be placed in the right order inside the call to intersection()
-        float minX = amath::min(ball.position.x, ball.position.x - (ball.GetDirection().x * ball.speed * deltaTime));
-        float maxX = amath::max(ball.position.x - (ball.GetDirection().x * ball.speed * deltaTime), ball.position.x + ball.width);
-        float minY = amath::min(ball.position.y, ball.position.y - (ball.GetDirection().y * ball.speed * deltaTime));
-        float maxY = amath::max(ball.position.y - (ball.GetDirection().y * ball.speed * deltaTime), ball.position.y + ball.height);
-        
-        bool checkX = intersection(rect.position.x, rect.position.x + rect.width, minX, maxX);
-        bool checkY = intersection(rect.position.y, rect.position.y + rect.height, minY, maxY);
-    
-        return checkX && checkY;
+        return inter;
     }
 
     bool collisionCheck(const GameRect& rect, GamePlatform& platform)
