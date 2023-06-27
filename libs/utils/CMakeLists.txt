@@ -17,7 +17,7 @@ ${CMAKE_SOURCE_DIR}/libs/utils/include)
 
 # options to enable warnings
 if(MSVC)
-  target_compile_options(utils PRIVATE) #/W4 /WX to consider warnings like errors
+  target_compile_options(utils PRIVATE /MDd) # /W4 /WX to consider warnings like errors, /MDd to degine _DEBUG, _MT and _DLL
 else()
   target_compile_options(utils PRIVATE -Wall -Wextra -Wpedantic -Wconversion)
 endif()
