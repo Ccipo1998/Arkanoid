@@ -4,6 +4,13 @@
 #include "GameObject.h"
 #include "ArkanoidList.hpp"
 
+enum class LevelStatus
+{
+    RUNNING,
+    COMPLETED,
+    FAILED
+};
+
 class Level
 {
 
@@ -84,6 +91,12 @@ public:
 
     /*
     @brief
+    Check the status of the current level. Possible output: RUNNING, COMPLETED, FAILED
+    */
+    LevelStatus GetLevelStatus();
+
+    /*
+    @brief
     Handle events sending them to the targets
     @param sdlEvent: reference to the event to handle
     @param deltaTime: the time passed from the last frame
@@ -117,5 +130,7 @@ private:
     GameRect* platformSpace;
 
     bool levelStarted;
+
+    LevelStatus status;
 
 };

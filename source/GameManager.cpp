@@ -189,22 +189,31 @@ void GameManager::LoadPrefabs()
 
 void GameManager::GenerateRandomLevel()
 {
+    // delete previous level
+    if (this->currentLevel != nullptr)
+    {
+        delete this->currentLevel;
+        this->currentLevel = nullptr;
+    }
+
     // general data
     unsigned int boundariesDepth = 25;
-    unsigned int platformSpaceHeight = 200;
+    unsigned int gridOffset = 70;
+    unsigned int platformSpaceHeight = 150;
+    unsigned int wallsSpaceHeight = 420;
     unsigned int wallsNumberRow = 20;
     unsigned int wallsNumberColumn = 10;
-    unsigned int wallsNumber = wallsNumberRow * wallsNumberColumn / 2;
-    float platformWidth = 80.0f;
-    float platformHeight = 20.0f;
+    unsigned int wallsNumber = rand() % (wallsNumberRow * wallsNumberColumn / 2) + (wallsNumberRow * wallsNumberColumn / 4);
+    float platformWidth = 75.0f;
+    float platformHeight = 15.0f;
     float ballSize = 10.0f;
     float startingBallOffset = 10.0f;
     float ballSpeed = 500.f;
 
     // level spaces initializations
     this->currentLevel = new Level();
-    this->currentLevel->SetWallsSpace(new GameRect(vec2f(float(boundariesDepth), float(boundariesDepth)), this->windowWidth - (boundariesDepth * 2), (this->windowHeight - platformSpaceHeight - 100) - boundariesDepth, nullptr));
-    this->currentLevel->SetPlatformSpace(new GameRect(vec2f(float(boundariesDepth), float(boundariesDepth) + this->currentLevel->GetWallsSpace()->height + 100), this->windowWidth - (boundariesDepth * 2), platformSpaceHeight, nullptr));
+    this->currentLevel->SetWallsSpace(new GameRect(vec2f(float(boundariesDepth + gridOffset), float(boundariesDepth + gridOffset)), this->windowWidth - ((boundariesDepth + gridOffset) * 2), wallsSpaceHeight - gridOffset, nullptr));
+    this->currentLevel->SetPlatformSpace(new GameRect(vec2f(float(boundariesDepth), float(this->windowHeight - boundariesDepth - platformSpaceHeight)), this->windowWidth - (boundariesDepth * 2), platformSpaceHeight, nullptr));
 
     // pick random background
     this->currentLevel->SetBackground(new GameRect(vec2f(.0f, .0f), this->windowWidth, this->windowHeight, this->BackgroundsPrefabs[rand() % (this->BackgroundsPrefabs.GetSize() - 1)]));

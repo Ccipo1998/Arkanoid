@@ -1,10 +1,13 @@
 
 #include "Level.h"
 #include "ArkanoidPhysics.h"
+#include "GameManager.h"
+#include "Singleton.hpp"
 
 Level::Level()
     : background(nullptr)
     , levelStarted(false)
+    , status(LevelStatus::RUNNING)
     {}
 
 void Level::AddGameWall(GameWall* wall)
@@ -57,6 +60,11 @@ GameRect* Level::GetPlatformSpace()
     return this->platformSpace;
 }
 
+LevelStatus Level::GetLevelStatus()
+{
+    return this->status;
+}
+
 void Level::HandleEvents(SDL_Event& sdlEvent)
 {
     // platform events
@@ -89,18 +97,46 @@ void Level::HandleEvents(SDL_Event& sdlEvent)
 
 void Level::Update(double deltaTime)
 {
+    unsigned int remainingWalls = this->gameWallList.GetSize();
+    unsigned int remainingBalls = this->gameBallList.GetSize();
+
     // call updates of platform, balls and walls
 
     for (unsigned int i = 0; i < this->gamePlatformList.GetSize(); ++i)
+    {
+        if (!this->gamePlatformList[i]->IsEnabled())
+            continue;
+
         this->gamePlatformList[i]->Update(deltaTime);
+    }
 
     // game balls
     for (unsigned int i = 0; i < this->gameBallList.GetSize(); ++i)
+    {
+        if (!this->gameBallList[i]->IsEnabled())
+        {
+            // update remaining number
+            --remainingBalls;
+            
+            continue;
+        }
+
+        // check if the ball is lost
+        GameManager* manager = Singleton<GameManager>::GetInstance();
+        if (this->gameBallList[i]->position.y > manager->windowHeight)
+            this->gameBallList[i]->Disable();
+
         this->gameBallList[i]->Update(deltaTime);
+    }
 
     // game walls
     for (unsigned int i = 0; i < this->gameWallList.GetSize(); ++i)
+    {
+        if (!this->gameWallList[i]->IsEnabled())
+            continue;
+
         this->gameWallList[i]->Update(deltaTime);
+    }
 
     // collision detection and response (target = platform)
 
@@ -128,7 +164,12 @@ void Level::Update(double deltaTime)
     {
         // only if enabled
         if (!this->gameWallList[i]->IsEnabled())
+        {
+            // update remaining number
+            --remainingWalls;
+
             continue;
+        }
 
         if (aphys::collisionCheck(*this->gameWallList[i], *this->gameBallList[0], deltaTime))
         {
@@ -148,6 +189,12 @@ void Level::Update(double deltaTime)
         if (aphys::collisionCheck(*this->gameBoundaryList[i], *this->gameBallList[0], deltaTime))
             aphys::collisionResponse(*this->gameBoundaryList[i], *this->gameBallList[0], deltaTime);
     }
+
+    // in the end check level status
+    if (remainingBalls == 0)
+        this->status = LevelStatus::FAILED;
+    else if (remainingWalls == 0)
+        this->status = LevelStatus::COMPLETED;
 
     // if level is not started, the ball needs to move with the platform -> AFTER platform collision detection and update
     if (!this->levelStarted && this->gameBallList.GetSize() > 0 && this->gamePlatformList.GetSize() > 0)

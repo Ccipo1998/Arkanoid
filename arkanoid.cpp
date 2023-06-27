@@ -26,6 +26,7 @@ no container
 
 #include "Singleton.hpp"
 #include "GameManager.h"
+#include "Level.h"
 
 int main() {
 
@@ -65,6 +66,9 @@ int main() {
     // keeps track of time between steps
     MGDTimer stepTimer;
 
+    // current level status
+    LevelStatus currentStatus;
+
     // game loop
     while(!quitGame)
     {
@@ -82,6 +86,28 @@ int main() {
                 quitGame = true;
 
             manager->GetCurrentLevel()->HandleEvents(sdlEvent);
+        }
+
+        // check current level status
+        currentStatus = manager->GetCurrentLevel()->GetLevelStatus();
+        switch (currentStatus)
+        {
+        case LevelStatus::COMPLETED:
+            
+            // next level
+            manager->GenerateRandomLevel();
+
+            break;
+
+        case LevelStatus::FAILED:
+
+            // game over
+            quitGame = true;
+
+            break;
+        
+        default:
+            break;
         }
 
         // Clear screen
