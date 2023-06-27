@@ -89,7 +89,7 @@ int main() {
         SDL_RenderClear(manager->renderer);
 
         // level update
-        manager->GetCurrentLevel()->Update(deltaTimeMs);
+        manager->GetCurrentLevel()->Update(deltaTimeS);
 
         // level rendering
         manager->GetCurrentLevel()->Render();

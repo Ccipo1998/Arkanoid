@@ -34,36 +34,37 @@ namespace aphys
         float deltaX = .0f;
         float deltaY = .0f;
 
+        // from upper left
         if (ball.GetDirection().x >= .0f && ball.GetDirection().y >= .0f)
         {
             // possible intersection on up or left edge
-            deltaX = amath::abs(staticRect.position.x - ball.position.x) + ball.width;
-            deltaY = amath::abs(staticRect.position.y - ball.position.y) + ball.height;
+            deltaX = amath::abs(staticRect.position.x - ball.position.x - ball.width);
+            deltaY = amath::abs(staticRect.position.y - ball.position.y - ball.height);
         }
+        // from upper right
         else if (ball.GetDirection().x <= .0f && ball.GetDirection().y >= .0f)
         {
             // possible intersection on up or right edge
-            deltaX = staticRect.width - amath::abs(staticRect.position.x - ball.position.x);
-            deltaY = amath::abs(staticRect.position.y - ball.position.y) + ball.height;
+            deltaX = amath::abs(staticRect.position.x + staticRect.width - ball.position.x);
+            deltaY = amath::abs(staticRect.position.y - ball.position.y - ball.height);
         }
+        // from lower left
         else if (ball.GetDirection().x >= .0f && ball.GetDirection().y <= .0f)
         {
             // possible intersection on bottom or left edge
-            deltaX = amath::abs(staticRect.position.x - ball.position.x) + ball.width;
-            deltaY = staticRect.height - amath::abs(staticRect.position.y - ball.position.y);
+            deltaX = amath::abs(staticRect.position.x - ball.position.x - ball.width);
+            deltaY = amath::abs(staticRect.position.y + staticRect.height - ball.position.y);
         }
-        else if (ball.GetDirection().x <= .0f && ball.GetDirection().y <= .0f)
+        // from lower right
+        else
         {
             // possible intersection on bottom or right edge
-            deltaX = staticRect.width - amath::abs(staticRect.position.x - ball.position.x);
-            deltaY = staticRect.height - amath::abs(staticRect.position.y - ball.position.y);
+            deltaX = amath::abs(staticRect.position.x + staticRect.width - ball.position.x);
+            deltaY = amath::abs(staticRect.position.y + staticRect.height - ball.position.y);
         }
-
-        // if the ball is already inside the rectangle it must be shifted back
-        if ((deltaX >= .0f + epsilon && deltaX <= .0f - epsilon) || (deltaY >= .0f + epsilon && deltaY <= .0f - epsilon))
-        {
-            ball.position -= ball.GetDirection() * amath::length(vec2f(deltaX, deltaY));
-        }
+        
+        // move back the ball
+        ball.position -= ball.GetDirection() * ball.speed * deltaTime;
 
         // select the correct way to flip direction
         if (deltaX < deltaY)
@@ -72,9 +73,6 @@ namespace aphys
             ball.SetDirection(vec2f(ball.GetDirection().x, -ball.GetDirection().y));
         else
             ball.SetDirection(-ball.GetDirection());
-
-        // movement in new direction to avoid new immediate collisions after collision response
-        ball.position += ball.GetDirection() * ball.speed * deltaTime;
     }
 
     bool collisionCheck(const GameRect& rect, GameBall& ball, double deltaTime)
@@ -107,10 +105,10 @@ namespace aphys
 
     bool intersection(float x1, float x2, float x3, float x4)
     {
-        if (x2 < x3)
+        if (x2 <= x3)
             return false;
 
-        if (x4 < x1)
+        if (x4 <= x1)
             return false;
 
         return true;

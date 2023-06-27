@@ -199,7 +199,7 @@ void GameManager::GenerateRandomLevel()
     float platformHeight = 20.0f;
     float ballSize = 10.0f;
     float startingBallOffset = 10.0f;
-    float ballSpeed = .5f;
+    float ballSpeed = 500.f;
 
     // level spaces initializations
     this->currentLevel = new Level();
