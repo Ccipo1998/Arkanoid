@@ -7,7 +7,6 @@ source/GameObject.cpp
 source/ArkanoidPhysics.cpp
 source/Level.cpp
 source/GameManager.cpp
-source/Grid.cpp
 source/MGDTexture.cpp
 source/MGDTimer.cpp) #sources
 

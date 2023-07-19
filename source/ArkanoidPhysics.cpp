@@ -78,10 +78,10 @@ namespace aphys
     bool collisionCheck(const GameRect& rect, GameBall& ball, double deltaTime)
     {
         // points need to be placed in the right order inside the call to intersection()
-        float minX = amath::min(ball.position.x, ball.position.x - (ball.GetDirection().x * ball.speed * deltaTime));
-        float maxX = amath::max(ball.position.x - (ball.GetDirection().x * ball.speed * deltaTime), ball.position.x + ball.width);
-        float minY = amath::min(ball.position.y, ball.position.y - (ball.GetDirection().y * ball.speed * deltaTime));
-        float maxY = amath::max(ball.position.y - (ball.GetDirection().y * ball.speed * deltaTime), ball.position.y + ball.height);
+        float minX = amath::min(ball.position.x, ball.position.x - float(ball.GetDirection().x * ball.speed * deltaTime));
+        float maxX = amath::max(ball.position.x - float(ball.GetDirection().x * ball.speed * deltaTime), ball.position.x + ball.width);
+        float minY = amath::min(ball.position.y, ball.position.y - float(ball.GetDirection().y * ball.speed * deltaTime));
+        float maxY = amath::max(ball.position.y - float(ball.GetDirection().y * ball.speed * deltaTime), ball.position.y + ball.height);
         
         bool checkX = intersection(rect.position.x, rect.position.x + rect.width, minX, maxX);
         bool checkY = intersection(rect.position.y, rect.position.y + rect.height, minY, maxY);

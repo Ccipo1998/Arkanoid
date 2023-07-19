@@ -197,10 +197,10 @@ void GameManager::GenerateRandomLevel()
     }
 
     // general data
-    unsigned int boundariesDepth = 25;
-    unsigned int gridOffset = 70;
-    unsigned int platformSpaceHeight = 150;
-    unsigned int wallsSpaceHeight = 420;
+    float boundariesDepth = 25;
+    float gridOffset = 70;
+    float platformSpaceHeight = 150;
+    float wallsSpaceHeight = 420;
     unsigned int wallsNumberRow = 20;
     unsigned int wallsNumberColumn = 10;
     unsigned int wallsNumber = rand() % (wallsNumberRow * wallsNumberColumn / 2) + (wallsNumberRow * wallsNumberColumn / 4);
@@ -212,11 +212,11 @@ void GameManager::GenerateRandomLevel()
 
     // level spaces initializations
     this->currentLevel = new Level();
-    this->currentLevel->SetWallsSpace(new GameRect(vec2f(float(boundariesDepth + gridOffset), float(boundariesDepth + gridOffset)), this->windowWidth - ((boundariesDepth + gridOffset) * 2), wallsSpaceHeight - gridOffset, nullptr));
-    this->currentLevel->SetPlatformSpace(new GameRect(vec2f(float(boundariesDepth), float(this->windowHeight - boundariesDepth - platformSpaceHeight)), this->windowWidth - (boundariesDepth * 2), platformSpaceHeight, nullptr));
+    this->currentLevel->SetWallsSpace(new GameRect(vec2f(boundariesDepth + gridOffset, boundariesDepth + gridOffset), this->windowWidth - ((boundariesDepth + gridOffset) * 2), wallsSpaceHeight - gridOffset, nullptr));
+    this->currentLevel->SetPlatformSpace(new GameRect(vec2f(boundariesDepth, this->windowHeight - boundariesDepth - platformSpaceHeight), this->windowWidth - (boundariesDepth * 2), platformSpaceHeight, nullptr));
 
     // pick random background
-    this->currentLevel->SetBackground(new GameRect(vec2f(.0f, .0f), this->windowWidth, this->windowHeight, this->BackgroundsPrefabs[rand() % (this->BackgroundsPrefabs.GetSize() - 1)]));
+    this->currentLevel->SetBackground(new GameRect(vec2f(.0f, .0f), float(this->windowWidth), float(this->windowHeight), this->BackgroundsPrefabs[rand() % (this->BackgroundsPrefabs.GetSize() - 1)]));
 
     // generate boundaries rectangles
     GamePrefab* boundPtr = nullptr;
@@ -226,9 +226,9 @@ void GameManager::GenerateRandomLevel()
     #endif
 
     // game boundaries
-    this->currentLevel->AddGameBoundary(new GameRect(vec2f(.0f, .0f), this->windowWidth, boundariesDepth, boundPtr));
-    this->currentLevel->AddGameBoundary(new GameRect(vec2f(.0f, float(boundariesDepth)), boundariesDepth, this->windowHeight, boundPtr));
-    this->currentLevel->AddGameBoundary(new GameRect(vec2f(float(this->windowWidth - boundariesDepth), float(boundariesDepth)), boundariesDepth, this->windowHeight, boundPtr));
+    this->currentLevel->AddGameBoundary(new GameRect(vec2f(.0f, .0f), float(this->windowWidth), boundariesDepth, boundPtr));
+    this->currentLevel->AddGameBoundary(new GameRect(vec2f(.0f, float(boundariesDepth)), float(boundariesDepth), float(this->windowHeight), boundPtr));
+    this->currentLevel->AddGameBoundary(new GameRect(vec2f(float(this->windowWidth - boundariesDepth), float(boundariesDepth)), float(boundariesDepth), float(this->windowHeight), boundPtr));
 
     // game platform
     this->currentLevel->AddGamePlatform(new GamePlatform(

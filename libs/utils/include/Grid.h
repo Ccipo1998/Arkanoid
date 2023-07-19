@@ -1,6 +1,10 @@
 
 #pragma once
 
+#ifndef LIB
+#define LIB __declspec(dllexport)
+#endif // !LIB
+
 #include "ArkanoidMath.h"
 #include "ArkanoidList.hpp"
 
@@ -17,38 +21,38 @@ public:
     @param cellsNumberRow: the number of cells in a row
     @paragraph cellsNumberColumn: the number of cells in a column
     */
-    Grid(unsigned int width, unsigned int height, unsigned int cellsNumberRow, unsigned int cellsNumberColumn, const vec2f& startingPosition);
+    LIB Grid(float width, float height, unsigned int cellsNumberRow, unsigned int cellsNumberColumn, const vec2f& startingPosition);
 
     /*
     @brief
     Computed cell width getter
     */
-    float GetCellWidth();
+    LIB float GetCellWidth();
 
     /*
     @brief
     Computed cell height getter
     */
-    float GetCellHeight();
+    LIB float GetCellHeight();
 
     /*
     @brief
     Next free position getter
     */
-    vec2f GetNextFreePosition();
+    LIB vec2f GetNextFreePosition();
 
     /*
     @brief
     Random free position getter
     */
-    vec2f GetRandomFreePosition();
+    LIB vec2f GetRandomFreePosition();
 
-    ~Grid();
+    LIB ~Grid();
 
 private:
 
-    unsigned int width;
-    unsigned int height;
+    float width;
+    float height;
     float cellWidth;
     float cellHeight;
     unsigned int cellsNumberRow;

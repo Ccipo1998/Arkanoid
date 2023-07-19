@@ -3,7 +3,7 @@
 #include "stdlib.h"
 #include "time.h"
 
-Grid::Grid(unsigned int width, unsigned int height, unsigned int cellsNumberRow, unsigned int cellsNumberColumn, const vec2f& startingPosition)
+Grid::Grid(float width, float height, unsigned int cellsNumberRow, unsigned int cellsNumberColumn, const vec2f& startingPosition)
     : width(width)
     , height(height)
     , cellsNumberRow(cellsNumberRow)

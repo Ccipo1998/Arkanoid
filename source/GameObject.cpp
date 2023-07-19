@@ -76,7 +76,7 @@ void GameRect::Render()
 		return;
 
 	// create temp sdl rect
-	SDL_Rect rect = { this->position.x, this->position.y, this->width, this->height };
+	SDL_Rect rect = { int(this->position.x), int(this->position.y), int(this->width), int(this->height) };
 	
 	// render current texture
 	this->prefab->GetTexture()->renderCopyEx(&rect);
