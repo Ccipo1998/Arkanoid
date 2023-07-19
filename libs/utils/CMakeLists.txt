@@ -2,9 +2,8 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(utils VERSION 0.1.0)
 
-add_library(utils STATIC # if SHARED -> compile errors when modifying library files
+add_library(utils SHARED # if SHARED -> compile errors when modifying library files
 source/ArkanoidMath.cpp
-source/ArkanoidPhysics.cpp
 include/ArkanoidList.hpp
 include/Singleton.hpp)
 

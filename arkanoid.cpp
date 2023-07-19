@@ -1,9 +1,3 @@
-/*
-Requisiti minimi progetto finale:
-no memory leak
-no using
-no container
-*/
 
 // for memory leaks check
 #ifdef BUILD_DEBUG
@@ -20,7 +14,6 @@ no container
 #include <cstdio> //Some utilities for the log
 #include <memory> // Needed for the smart pointers
 
-#include "MGDMovableTexture.h"
 #include "MGDTexture.h"
 #include "MGDTimer.h"
 
