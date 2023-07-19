@@ -37,9 +37,11 @@ int main() {
     // Start up SDL and create window
     if (!manager->InitializeSDL(680, 740)) {
         printf("Failed to initialize!\n");
-        
+    
         // Free resources and close SDL
         manager->CloseSDL();
+
+        delete manager;
 
         return 0;
     }
