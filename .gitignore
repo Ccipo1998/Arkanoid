@@ -8,7 +8,7 @@ bin/
 # build folder
 build/
 
-libs/sdl
+#libs/sdl
 
 old/
 
